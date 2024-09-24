@@ -57,3 +57,7 @@ obj/
 
 # Ignore .NET user secrets
 **/secrets.json
+
+## DB Migration
+
+/server/Service/Migrations/
