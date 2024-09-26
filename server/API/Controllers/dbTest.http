@@ -1,0 +1,132 @@
+﻿### Create Customer
+POST http://localhost:5193/Customers
+Content-Type: application/json
+
+{
+  "customerName": "Fred",
+  "customerAddress": "123 Ave",
+  "customerPhone": "5553622",
+  "customerEmail": "hello@somewhere.net"
+}
+
+### Get Customers
+GET http://localhost:5193/Customers
+
+### Update Customers
+PUT http://localhost:5193/Customers
+Content-Type: application/json
+
+{
+  "customerName": "Rick",
+  "customerAddress": "544 Ave",
+  "customerPhone": "9999999",
+  "customerEmail": "notha@ser.net"
+}
+
+### Delete Customer
+DELETE http://localhost:5193/Customers/1
+
+### Get all customers with orders
+GET http://localhost:5193/customers/customer-orders
+
+#### Add an order to a customer
+POST http://localhost:5193/customers/1/orders
+Content-Type: application/json
+
+{
+  "orderDate": "2024-09-26T00:00:00Z",
+  "orderAmount": 100.00
+}
+
+### Create OrderEntry
+POST http://localhost:5193/orderentries
+Content-Type: application/json
+
+{
+  "quantity": 10,
+  "productId": 1,
+  "orderId": 1
+}
+
+### Get All OrderEntries
+GET http://localhost:5193/orderentries
+
+### Get OrderEntries by Order ID
+GET http://localhost:5193/orderentries/order/1
+
+### Get OrderEntries by Product ID
+GET http://localhost:5193/orderentries/product/1
+
+### Update OrderEntry
+PUT http://localhost:5193/orderentries/1
+Content-Type: application/json
+
+{
+  "quantity": 20,
+  "productId": 1,
+  "orderId": 1
+}
+
+### Delete OrderEntry
+DELETE http://localhost:5193/orderentries/1
+
+### Add a New Paper
+POST http://localhost:5193/paper
+Content-Type: application/json
+
+{
+  "name": "A4 Paper",
+  "discontinued": false,
+  "stock": 100,
+  "price": 5.99,
+  "orderEntries": [],
+  "properties": []
+}
+
+### Get All Papers
+GET http://localhost:5193/paper
+
+### Get Paper by ID
+GET http://localhost:5193/paper/1
+
+### Get Papers by Property ID
+GET http://localhost:5193/paper/property/1
+
+### Update Paper
+PUT http://localhost:5193/paper/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "A4 Paper Updated",
+  "discontinued": false,
+  "stock": 150,
+  "price": 6.99,
+  "orderEntries": [],
+  "properties": []
+}
+
+### Delete Paper
+DELETE http://localhost:5193/paper/1
+
+### Create Properties
+POST http://localhost:5193/properties
+Content-Type: application/json
+
+{
+  "propertyName": "Water-Resistant"
+}
+
+### Get Properties
+GET http://localhost:5193/properties
+
+### Update Properties
+PUT http://localhost:5193/properties/1
+Content-Type: application/json
+
+{
+  "propertyName": "No Longer water Resistant"
+}
+
+### Delete Properties
+DELETE http://localhost:5193/properties/1

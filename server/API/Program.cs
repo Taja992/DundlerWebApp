@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddDbContext<DunderMifflinContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
 
@@ -33,6 +34,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Enable CORS
-app.UseCors("AllowSpecificOrigin");
+app.UseCors();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
