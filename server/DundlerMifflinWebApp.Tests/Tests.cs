@@ -1,6 +1,6 @@
 namespace DundlerMifflinWebApp.Tests;
 
-public class UnitTest1
+public class Tests
 {
     [Fact]
     public void Test1()
