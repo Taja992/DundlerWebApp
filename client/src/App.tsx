@@ -1,38 +1,137 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
+import { customersAtom, newCustomerAtom } from './atoms/customerAtoms';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-      <>
-          <div>
-              <a href="https://vitejs.dev" target="_blank">
-                  <img src={viteLogo} className="logo" alt="Vite logo"/>
-              </a>
-              <a href="https://react.dev" target="_blank">
-                  <img src={reactLogo} className="logo react" alt="React logo"/>
-              </a>
-          </div>
-          <h1>Vite + React</h1>
-          <div className="card">
-              <button onClick={() => setCount((count) => count + 1)}>
-                  count is {count}
-              </button>
-              <p>
-                  Edit <code>src/App.tsx</code> and save to test HMR
-              </p>
-          </div>
-          <button className="bg-blue-500 text-white font-bold py-2 px-4 rounded mt-4">
-              This is an example of a Tailwind button
-          </button>
-          <p className="read-the-docs">
-              Click on the Vite and React logos to learn more
-          </p>
-      </>
-  )
+// Define the Customer type
+interface Customer {
+    id: number;
+    name: string;
 }
 
-export default App
+function App() {
+    const [customers, setCustomers] = useAtom(customersAtom);
+    const [newCustomer, setNewCustomer] = useAtom(newCustomerAtom);
+    const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+    const [editingName, setEditingName] = useState('');
+
+    useEffect(() => {
+        const fetchCustomers = async () => {
+            try {
+                const response = await fetch('http://localhost:5193/customers'); // Replace with your ASP.NET Core backend URL
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data: Customer[] = await response.json();
+                setCustomers(data);
+            } catch (error) {
+                console.error('Error fetching customers:', error);
+            }
+        };
+
+        fetchCustomers();
+    }, [setCustomers]);
+
+    const handleCreateCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5193/customers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: newCustomer.name }),
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const createdCustomer: Customer = await response.json();
+            setCustomers([...customers, createdCustomer]);
+            setNewCustomer({ name: '' });
+        } catch (error) {
+            console.error('Error creating customer:', error);
+        }
+    };
+
+    const handleEditCustomer = (customer: Customer) => {
+        setEditingCustomer(customer);
+        setEditingName(customer.name);
+    };
+
+    const handleSaveCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!editingCustomer) return;
+
+        try {
+            const response = await fetch(`http://localhost:5193/customers/${editingCustomer.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ...editingCustomer, name: editingName }),
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const updatedCustomer: Customer = { ...editingCustomer, name: editingName };
+            setCustomers(customers.map(c => c.id === updatedCustomer.id ? updatedCustomer : c));
+            setEditingCustomer(null);
+            setEditingName('');
+        } catch (error) {
+            console.error('Error updating customer:', error);
+        }
+    };
+
+    return (
+        <div className="App">
+            <h1>Customer Management</h1>
+            <form onSubmit={handleCreateCustomer}>
+                <input
+                    type="text"
+                    value={newCustomer.name}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                    placeholder="New Customer Name"
+                    required
+                />
+                <button type="submit">Add Customer</button>
+            </form>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {customers.map((customer) => (
+                    <tr key={customer.id}>
+                        <td>{customer.id}</td>
+                        <td>
+                            {editingCustomer && editingCustomer.id === customer.id ? (
+                                <form onSubmit={handleSaveCustomer}>
+                                    <input
+                                        type="text"
+                                        value={editingName}
+                                        onChange={(e) => setEditingName(e.target.value)}
+                                        required
+                                    />
+                                    <button type="submit">Save</button>
+                                    <button type="button" onClick={() => setEditingCustomer(null)}>Cancel</button>
+                                </form>
+                            ) : (
+                                customer.name
+                            )}
+                        </td>
+                        <td>
+                            <button onClick={() => handleEditCustomer(customer)}>Edit</button>
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export default App;

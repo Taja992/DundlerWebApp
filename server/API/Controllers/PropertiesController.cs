@@ -1,28 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using DataAccess.Models;
 using Service;
-using Service.Models;
+
 
 namespace API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PropertiesController(DunderMifflinContext context) : ControllerBase
+public class PropertiesController(IPropertyService service) : ControllerBase
 {
     //Create
     [HttpPost]
     public async Task<ActionResult<Property>> CreateProperties([FromBody] Property property)
     {
-        context.Properties.Add(property);
-        await context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetProperty), new { id = property.Id }, property);
+        var newProperty = await service.AddProperty(property);
+        return CreatedAtAction(nameof(GetProperty), new { id = newProperty.Id }, newProperty);
     }
     
     //Read
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Property>>> GetProperties()
     {
-        var properties = await context.Properties.ToListAsync();
+        var properties = await service.GetAllProperties();
         return Ok(properties);
     }
 
@@ -30,7 +29,7 @@ public class PropertiesController(DunderMifflinContext context) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Property>> GetProperty(int id)
     {
-        var property = await context.Properties.FindAsync(id);
+        var property = await service.GetPropertyById(id);
         if (property == null)
         {
             return NotFound();
@@ -47,45 +46,33 @@ public class PropertiesController(DunderMifflinContext context) : ControllerBase
         {
             return BadRequest();
         }
-
-        context.Entry(property).State = EntityState.Modified;
-
+        
         try
         {
-            await context.SaveChangesAsync();
+            await service.UpdateProperty(property);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (KeyNotFoundException)
         {
-            if (!PropertyExists(id))
-            {
-                return NotFound();
-            }
-            {
-                throw;
-            }
+            return NotFound();
         }
-
         return NoContent();
     }
     // Used above in Update to check if the order still exists to stop concurrency issues
-    private bool PropertyExists(int id)
-    {
-        return context.Properties.Any(e => e.Id == id);
-    }
+
     
     //Delete
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProperties(int id)
     {
-        var property = await context.Properties.FindAsync(id);
-        if (property == null)
+        try
+        {
+            await service.DeleteProperty(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound();
         }
 
-        context.Properties.Remove(property);
-        await context.SaveChangesAsync();
-
-        return NoContent();
     }
 }

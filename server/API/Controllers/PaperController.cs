@@ -1,43 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using DataAccess.Models;
 using Service;
-using Service.Models;
+
 
 namespace API.Controllers;
 
 
 [ApiController]
 [Route("[controller]")]
-public class PaperController(DunderMifflinContext context) : ControllerBase
+public class PaperController(IPaperService service) : ControllerBase
 {
     // Add Paper
     [HttpPost]
     public async Task<ActionResult<Paper>> AddPaper([FromBody] Paper paper)
     {
-        context.Papers.Add(paper);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetPaperById), new { id = paper.Id }, paper);
+        var addedPaper = await service.AddPaper(paper);
+        
+        return CreatedAtAction(nameof(GetPaperById), new { id = addedPaper.Id }, addedPaper);
     }
 
     // Get all Paper
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Paper>>> GetAllPaper()
     {
-        return await context.Papers
-            .Include(p => p.OrderEntries)
-            .Include(p => p.Properties)
-            .ToListAsync();
+        var papers = await service.GetAllPaper();
+        return Ok(papers);
     }
     
     // Get Paper via Id
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Paper>> GetPaperById(int id)
     {
-        var paper = await context.Papers
-            .Include(p => p.OrderEntries)
-            .Include(p => p.Properties)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var paper = await service.GetPaperById(id);
 
         if (paper == null)
         {
@@ -47,18 +41,15 @@ public class PaperController(DunderMifflinContext context) : ControllerBase
         return Ok(paper);
     }
     
-    // Get Paper Via Properties
-    [HttpGet("property/{propertyId}")]
+// Get Paper Via Properties
+    [HttpGet("property/{propertyId:int}")]
     public async Task<ActionResult<IEnumerable<Paper>>> GetPaperByProperty(int propertyId)
     {
-        var papers = await context.Papers
-            .Where(p => p.Properties.Any(prop => prop.Id == propertyId))
-            .ToListAsync();
+        var papers = await service.GetPaperByProperty(propertyId);
         return Ok(papers);
     }
     
-    // Update Paper Info
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdatePaper(int id, [FromBody] Paper paper)
     {
         if (id != paper.Id)
@@ -66,46 +57,31 @@ public class PaperController(DunderMifflinContext context) : ControllerBase
             return BadRequest();
         }
 
-        context.Entry(paper).State = EntityState.Modified;
-
         try
         {
-            await context.SaveChangesAsync();
+            await service.UpdatePaper(paper);
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!PaperExists(id))
-            {
-                return NotFound();
-            }
-
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
-    }
-    
-    private bool PaperExists(int id)
-    {
-        return context.Papers.Any(e => e.Id == id);
-    }
-    
-    //Delete Paper
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePaper(int id)
-    {
-        var paper = await context.Papers.FindAsync(id);
-        if (paper == null)
+        catch (KeyNotFoundException)
         {
             return NotFound();
         }
-
-        context.Papers.Remove(paper);
-        await context.SaveChangesAsync();
-
         return NoContent();
+    }
+    
+    
+// Delete Paper
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeletePaper(int id)
+    {
+        try
+        {
+            await service.DeletePaper(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
     
 }

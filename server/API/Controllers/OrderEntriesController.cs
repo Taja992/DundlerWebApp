@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataAccess;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Service;
-using Service.Models;
+using DataAccess.Models;
+
 
 namespace API.Controllers;
 

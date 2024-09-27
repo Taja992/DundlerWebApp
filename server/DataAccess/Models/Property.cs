@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Service.Models;
+namespace DataAccess.Models;
 
 public partial class Property
 {

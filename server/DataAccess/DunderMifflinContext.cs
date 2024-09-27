@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Service.Models;
+using DataAccess.Models;
 
-namespace Service;
+namespace DataAccess;
 
 public partial class DunderMifflinContext : DbContext
 {
