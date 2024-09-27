@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DataAccess.Models;
 using Service;
+using Service.TransferModels.DTOs;
 
 
 namespace API.Controllers;
@@ -12,7 +13,7 @@ public class PaperController(IPaperService service) : ControllerBase
 {
     // Add Paper
     [HttpPost]
-    public async Task<ActionResult<Paper>> AddPaper([FromBody] Paper paper)
+    public async Task<ActionResult<PaperDto>> AddPaper([FromBody] Paper paper)
     {
         var addedPaper = await service.AddPaper(paper);
         
@@ -21,7 +22,7 @@ public class PaperController(IPaperService service) : ControllerBase
 
     // Get all Paper
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Paper>>> GetAllPaper()
+    public async Task<ActionResult<IEnumerable<PaperDto>>> GetAllPaper()
     {
         var papers = await service.GetAllPaper();
         return Ok(papers);
@@ -29,7 +30,7 @@ public class PaperController(IPaperService service) : ControllerBase
     
     // Get Paper via Id
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Paper>> GetPaperById(int id)
+    public async Task<ActionResult<PaperDto>> GetPaperById(int id)
     {
         var paper = await service.GetPaperById(id);
 
@@ -43,7 +44,7 @@ public class PaperController(IPaperService service) : ControllerBase
     
 // Get Paper Via Properties
     [HttpGet("property/{propertyId:int}")]
-    public async Task<ActionResult<IEnumerable<Paper>>> GetPaperByProperty(int propertyId)
+    public async Task<ActionResult<IEnumerable<PaperDto>>> GetPaperByProperty(int propertyId)
     {
         var papers = await service.GetPaperByProperty(propertyId);
         return Ok(papers);

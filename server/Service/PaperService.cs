@@ -2,6 +2,8 @@
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Service.TransferModels.DTOs;
+using Service.TransferModels.Mappers;
 
 
 namespace Service;
@@ -9,12 +11,12 @@ namespace Service;
 
 public interface IPaperService
 {
-    Task<IEnumerable<Paper>> GetAllPaper();
-    Task<Paper?> GetPaperById(int id);
-    Task<Paper> AddPaper(Paper paper);
+    Task<IEnumerable<PaperDto>> GetAllPaper();
+    Task<PaperDto?> GetPaperById(int id);
+    Task<PaperDto> AddPaper(Paper paper);
     Task UpdatePaper(Paper paper);
     Task DeletePaper(int id);
-    Task<IEnumerable<Paper>> GetPaperByProperty(int propertyId);
+    Task<IEnumerable<PaperDto>> GetPaperByProperty(int propertyId);
 }
 
 
@@ -25,34 +27,37 @@ public class PaperService(DunderMifflinContext context, ILogger<CustomerService>
     //
     // As a business admin I want to create new products, discontinue products and restock products.
     // This involves creating, updating, and managing the stock status of products.
-    public async Task<Paper> AddPaper(Paper paper)
+    public async Task<PaperDto> AddPaper(Paper paper)
     {
         context.Papers.Add(paper);
         await context.SaveChangesAsync();
-        return paper;
+        return paper.ToDto();
     }
     
-    public async Task<IEnumerable<Paper>> GetAllPaper()
+    public async Task<IEnumerable<PaperDto>> GetAllPaper()
     {
-        return await context.Papers
+        var papers = await context.Papers
             .Include(p => p.OrderEntries)
             .Include(p => p.Properties)
             .ToListAsync();
+        return papers.Select(p => p.ToDto());
     }
 
-    public async Task<Paper?> GetPaperById(int id)
+    public async Task<PaperDto?> GetPaperById(int id)
     {
-        return await context.Papers
+        var paper =  await context.Papers
             .Include(p => p.OrderEntries)
             .Include(p => p.Properties)
             .SingleOrDefaultAsync(p => p.Id == id);
+        return paper?.ToDto();
     }
     
-    public async Task<IEnumerable<Paper>> GetPaperByProperty(int propertyId)
+    public async Task<IEnumerable<PaperDto>> GetPaperByProperty(int propertyId)
     {
-        return await context.Papers
+        var paper = await context.Papers
             .Where(p => p.Properties.Any(prop => prop.Id == propertyId))
             .ToListAsync();
+        return paper.Select(p => p.ToDto());
     }
     
 
