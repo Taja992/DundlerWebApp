@@ -1,46 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DataAccess.Models;
 using Service;
-using Service.Models;
+
 
 namespace API.Controllers;
 
 
 [ApiController]
 [Route("[controller]")]
-public class CustomersController(DunderMifflinContext context) : ControllerBase
+public class CustomersController(ICustomerService service) : ControllerBase
 {
     
     //Create
     [HttpPost]
     public async Task<ActionResult<Customer>> CreateCustomers([FromBody] Customer customer)
     {
-        context.Customers.Add(customer);
-        await context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id}, customer);
+        var createdCustomer = await service.AddCustomer(customer);
+        return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
     }
     
-    // // Add Order to Customer
-    // [HttpPost("{customerId:int}/orders")]
-    // public async Task<IActionResult> AddOrderToCustomer(int customerId, [FromBody] Order order)
-    // {
-    //     var customer = await context.Customers.FindAsync(customerId);
-    //     if (customer == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     customer.Orders.Add(order);
-    //     await context.SaveChangesAsync();
-    //
-    //     return Ok(order);
-    // }
+    // Add Order to Customer
+    [HttpPost("{customerId:int}/orders")]
+    public async Task<IActionResult> AddOrderToCustomer(int customerId, [FromBody] Order order)
+    {
+        try
+        {
+            await service.AddOrderToCustomer(customerId, order);
+            return Ok(order);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
     
     // Get all Customers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
     {
-        var customer = await context.Customers.ToListAsync();
+        var customer = await service.GetCustomers();
         return Ok(customer);
     }
     
@@ -48,12 +47,12 @@ public class CustomersController(DunderMifflinContext context) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Customer>> GetCustomer(int id)
     {
-        var customer = await context.Customers.FindAsync(id);
+        var customer = await service.GetCustomerById(id);
         if (customer == null)
         {
             return NotFound();
         }
-
+        
         return Ok(customer);
     }
     
@@ -61,7 +60,7 @@ public class CustomersController(DunderMifflinContext context) : ControllerBase
     [HttpGet("customer-orders")]
     public async Task<ActionResult<IEnumerable<Customer>>> GetCustomersWithOrders()
     {
-        var customers = await context.Customers.Include(c => c.Orders).ToListAsync();
+        var customers = await service.GetCustomersWithOrders();
         return Ok(customers);
     }
     
@@ -74,46 +73,35 @@ public class CustomersController(DunderMifflinContext context) : ControllerBase
             return BadRequest();
         }
 
-        context.Entry(customer).State = EntityState.Modified;
-
         try
         {
-            await context.SaveChangesAsync();
+            await service.UpdateCustomer(customer);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!CustomerExists(id))
-            {
-                return NotFound();
-            }
-
-            {
-                throw;
-            }
+            return Conflict();
         }
 
         return NoContent();
-    }
-    // Used above in Update to check if the order still exists to stop concurrency issues
-    private bool CustomerExists(int id)
-    {
-        return context.Customers.Any(e => e.Id == id);
     }
     
     //Delete
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCustomer(int id)
     {
-        var customer = await context.Customers.FindAsync(id);
-        if (customer == null)
+        try
+        {
+            await service.DeleteCustomer(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound();
         }
-
-        context.Customers.Remove(customer);
-        await context.SaveChangesAsync();
-        
-        return NoContent();
     }
-    
+
 }

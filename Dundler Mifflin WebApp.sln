@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server", "server", "{53DFF6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DundlerMifflinWebApp.Tests", "server\DundlerMifflinWebApp.Tests\DundlerMifflinWebApp.Tests.csproj", "{42E37DFD-2480-4E8B-AEB9-E50D71F89698}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "server\DataAccess\DataAccess.csproj", "{286898CA-EC5B-4B0C-9871-7F196ECCF29B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{42E37DFD-2480-4E8B-AEB9-E50D71F89698}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42E37DFD-2480-4E8B-AEB9-E50D71F89698}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42E37DFD-2480-4E8B-AEB9-E50D71F89698}.Release|Any CPU.Build.0 = Release|Any CPU
+		{286898CA-EC5B-4B0C-9871-7F196ECCF29B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{286898CA-EC5B-4B0C-9871-7F196ECCF29B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{286898CA-EC5B-4B0C-9871-7F196ECCF29B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{286898CA-EC5B-4B0C-9871-7F196ECCF29B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42E37DFD-2480-4E8B-AEB9-E50D71F89698} = {53DFF64D-3CBF-4DFC-B115-E7A497240718}

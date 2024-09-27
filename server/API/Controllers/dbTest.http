@@ -3,24 +3,24 @@ POST http://localhost:5193/Customers
 Content-Type: application/json
 
 {
-  "customerName": "Fred",
-  "customerAddress": "123 Ave",
-  "customerPhone": "5553622",
-  "customerEmail": "hello@somewhere.net"
+  "name": "Fred",
+  "address": "123 Ave",
+  "phone": "5553622",
+  "email": "hello@somewhere.net"
 }
 
 ### Get Customers
 GET http://localhost:5193/Customers
 
 ### Update Customers
-PUT http://localhost:5193/Customers
+PUT http://localhost:5193/Customers/1
 Content-Type: application/json
 
 {
-  "customerName": "Rick",
-  "customerAddress": "544 Ave",
-  "customerPhone": "9999999",
-  "customerEmail": "notha@ser.net"
+  "name": "Fred",
+  "address": "544 Ave",
+  "phone": "9999999",
+  "email": "notha@ser.net"
 }
 
 ### Delete Customer
@@ -75,7 +75,7 @@ POST http://localhost:5193/paper
 Content-Type: application/json
 
 {
-  "name": "A4 Paper",
+  "name": "Some Special Paper",
   "discontinued": false,
   "stock": 100,
   "price": 5.99,
@@ -98,7 +98,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "name": "A4 Paper Updated",
+  "name": "No Longer Special",
   "discontinued": false,
   "stock": 150,
   "price": 6.99,
@@ -114,7 +114,7 @@ POST http://localhost:5193/properties
 Content-Type: application/json
 
 {
-  "propertyName": "Water-Resistant"
+  "propertyName": "Water-Resistant, Fire Proof!"
 }
 
 ### Get Properties
@@ -125,7 +125,7 @@ PUT http://localhost:5193/properties/1
 Content-Type: application/json
 
 {
-  "propertyName": "No Longer water Resistant"
+  "propertyName": "No Longer water Resistant, but still fire proof"
 }
 
 ### Delete Properties

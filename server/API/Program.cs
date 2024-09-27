@@ -1,11 +1,21 @@
-using Service;
+using DataAccess;
+using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DunderMifflinContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
+
+
+// Register Services
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPaperService, PaperService>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>

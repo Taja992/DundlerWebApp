@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using DataAccess.Models;
 using Service;
-using Service.Models;
+
 
 namespace API.Controllers;
 
@@ -9,37 +9,30 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class OrdersController(DunderMifflinContext context) : ControllerBase
+public class OrdersController(IOrderService service) : ControllerBase
 {
     // Create an Order
     [HttpPost]
     public async Task<ActionResult<Order>> CreateOrder([FromBody] Order order)
     {
-        context.Orders.Add(order);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+        var createdOrder = await service.CreateOrder(order);
+        return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
     }
 
     // Get All Orders
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
     {
-        return await context.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.OrderEntries)
-            .ToListAsync();
+        var orders = await service.GetOrders();
+        return Ok(orders);
     }
 
     // Get orders via Id
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Order>> GetOrder(int id)
     {
-        var order = await context.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.OrderEntries)
-            .FirstOrDefaultAsync(o => o.Id == id);
-
+        var order = await service.GetOrder(id);
+        
         if (order == null)
         {
             return NotFound();
@@ -49,62 +42,46 @@ public class OrdersController(DunderMifflinContext context) : ControllerBase
     }
     
     // Get Orders Via Customer Id
-    [HttpGet("Customer/{customerId}")]
+    [HttpGet("Customer/{customerId:int}")]
     public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomerId(int customerId)
     {
-        return await context.Orders.Where(o => o.CustomerId == customerId)
-            .Include(o => o.Customer)
-            .Include(o => o.OrderEntries)
-            .ToListAsync();
+        var customer = await service.GetOrdersByCustomerId(customerId);
+        return Ok(customer);
     }
     
     // Update Order Info
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateOrder(int id,[FromBody] Order order)
+    public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
     {
         if (id != order.Id)
         {
             return BadRequest();
         }
 
-        context.Entry(order).State = EntityState.Modified;
-
         try
         {
-            await context.SaveChangesAsync();
+            await service.UpdateOrder(id, order);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (KeyNotFoundException)
         {
-            if (!OrderExists(id))
-            {
-                return NotFound();
-            }
-            {
-                throw;
-            }
+            return NotFound();
         }
-        
         return NoContent();
     }
-    // Used above in Update to check if the order still exists to stop concurrency issues
-    private bool OrderExists(int id)
-    {
-        return context.Orders.Any(e => e.Id == id);
-    }
+
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteOrder(int id)
     {
-        var order = await context.Orders.FindAsync(id);
-        if (order == null)
+        try
+        {
+            await service.DeleteOrder(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
         {
             return NotFound();
         }
-
-        context.Orders.Remove(order);
-        await context.SaveChangesAsync();
-
-        return NoContent();
     }
     
 }
