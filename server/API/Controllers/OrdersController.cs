@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DataAccess.Models;
 using Service;
+using Service.TransferModels.DTOs;
 
 
 namespace API.Controllers;
@@ -13,7 +14,7 @@ public class OrdersController(IOrderService service) : ControllerBase
 {
     // Create an Order
     [HttpPost]
-    public async Task<ActionResult<Order>> CreateOrder([FromBody] Order order)
+    public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] Order order)
     {
         var createdOrder = await service.CreateOrder(order);
         return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
@@ -21,7 +22,7 @@ public class OrdersController(IOrderService service) : ControllerBase
 
     // Get All Orders
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
     {
         var orders = await service.GetOrders();
         return Ok(orders);
@@ -29,7 +30,7 @@ public class OrdersController(IOrderService service) : ControllerBase
 
     // Get orders via Id
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Order>> GetOrder(int id)
+    public async Task<ActionResult<OrderDto>> GetOrder(int id)
     {
         var order = await service.GetOrder(id);
         
@@ -43,7 +44,7 @@ public class OrdersController(IOrderService service) : ControllerBase
     
     // Get Orders Via Customer Id
     [HttpGet("Customer/{customerId:int}")]
-    public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomerId(int customerId)
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByCustomerId(int customerId)
     {
         var customer = await service.GetOrdersByCustomerId(customerId);
         return Ok(customer);

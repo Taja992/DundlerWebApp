@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Models;
 using Service;
+using Service.TransferModels.DTOs;
 
 
 namespace API.Controllers;
@@ -14,7 +15,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
     
     //Create
     [HttpPost]
-    public async Task<ActionResult<Customer>> CreateCustomers([FromBody] Customer customer)
+    public async Task<ActionResult<CustomerDto>> CreateCustomers([FromBody] Customer customer)
     {
         var createdCustomer = await service.AddCustomer(customer);
         return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
@@ -37,7 +38,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
     
     // Get all Customers
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+    public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
     {
         var customer = await service.GetCustomers();
         return Ok(customer);
@@ -45,7 +46,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
     
     // Get Single Customer with id
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Customer>> GetCustomer(int id)
+    public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
     {
         var customer = await service.GetCustomerById(id);
         if (customer == null)
@@ -58,7 +59,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
     
     //Get customers including orders
     [HttpGet("customer-orders")]
-    public async Task<ActionResult<IEnumerable<Customer>>> GetCustomersWithOrders()
+    public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomersWithOrders()
     {
         var customers = await service.GetCustomersWithOrders();
         return Ok(customers);

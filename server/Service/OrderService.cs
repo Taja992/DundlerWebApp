@@ -1,7 +1,10 @@
 ﻿using DataAccess;
 using DataAccess.Models;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Service.TransferModels.DTOs;
+using Service.TransferModels.Mappers;
 
 
 namespace Service;
@@ -10,10 +13,10 @@ namespace Service;
 
 public interface IOrderService
 {
-    Task<Order> CreateOrder(Order order);
-    Task<IEnumerable<Order>> GetOrders();
-    Task<Order?> GetOrder(int id);
-    Task<IEnumerable<Order>> GetOrdersByCustomerId(int customerId);
+    Task<OrderDto> CreateOrder(Order order);
+    Task<IEnumerable<OrderDto>> GetOrders();
+    Task<OrderDto?> GetOrder(int id);
+    Task<IEnumerable<OrderDto>> GetOrdersByCustomerId(int customerId);
     Task UpdateOrder(int id, Order order);
     Task DeleteOrder(int id);
 }
@@ -28,36 +31,39 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
     
     //     As a business admin I want to be able to change the status of an order.
     //     This involves updating the status of an existing order.
-    public async Task<Order> CreateOrder(Order order)
+    public async Task<OrderDto> CreateOrder(Order order)
     {
         context.Orders.Add(order);
         await context.SaveChangesAsync();
-        return order;
+        return order.ToDto();
     }
     
 
-    public async Task<IEnumerable<Order>> GetOrders()
+    public async Task<IEnumerable<OrderDto>> GetOrders()
     {
-        return await context.Orders
+        var orders = await context.Orders
             .Include(o => o.Customer)
             .Include(o => o.OrderEntries)
             .ToListAsync();
+        return orders.Select(o => o.ToDto());
     }
 
-    public async Task<Order?> GetOrder(int id)
+    public async Task<OrderDto?> GetOrder(int id)
     {
-        return await context.Orders
+        var order = await context.Orders
             .Include(o => o.Customer)
             .Include(o => o.OrderEntries)
             .FirstOrDefaultAsync(o => o.Id == id);
+        return order?.ToDto();
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByCustomerId(int customerId)
+    public async Task<IEnumerable<OrderDto>> GetOrdersByCustomerId(int customerId)
     {
-        return await context.Orders.Where(o => o.CustomerId == customerId)
+        var order = await context.Orders.Where(o => o.CustomerId == customerId)
             .Include(o => o.Customer)
             .Include(o => o.OrderEntries)
             .ToListAsync();
+        return order.Select(o => o.ToDto());
     }
 
     public async Task UpdateOrder(int id, Order order)

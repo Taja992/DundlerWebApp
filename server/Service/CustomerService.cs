@@ -2,6 +2,8 @@
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Service.TransferModels.DTOs;
+using Service.TransferModels.Mappers;
 
 
 namespace Service;
@@ -9,13 +11,13 @@ namespace Service;
 
 public interface ICustomerService
 {
-    Task<IEnumerable<Customer>> GetCustomers();
-    Task<Customer?> GetCustomerById(int id);
-    Task<Customer> AddCustomer(Customer customer);
+    Task<IEnumerable<CustomerDto>> GetCustomers();
+    Task<CustomerDto?> GetCustomerById(int id);
+    Task<CustomerDto> AddCustomer(Customer customer);
     Task UpdateCustomer(Customer customer);
     Task DeleteCustomer(int id);
     Task AddOrderToCustomer(int customerId, Order order);
-    Task<IEnumerable<Customer>> GetCustomersWithOrders();
+    Task<IEnumerable<CustomerDto>> GetCustomersWithOrders();
 }
 
 // As a customer I want to be able to see my own order history.
@@ -24,11 +26,11 @@ public interface ICustomerService
 public class CustomerService(DunderMifflinContext context, ILogger<CustomerService> logger) : ICustomerService
 {
 
-    public async Task<Customer> AddCustomer(Customer customer)
+    public async Task<CustomerDto> AddCustomer(Customer customer)
     {
         context.Customers.Add(customer);
         await context.SaveChangesAsync();
-        return customer;
+        return customer.ToDto();
     }
     
     
@@ -47,17 +49,19 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
     }
     
     
-    public async Task<IEnumerable<Customer>> GetCustomers()
+    public async Task<IEnumerable<CustomerDto>> GetCustomers()
     {
-        return await context.Customers.ToListAsync();
+        var customers = await context.Customers.ToListAsync();
+        return customers.Select(c => c.ToDto());
+
     }
 
-    public async Task<Customer?> GetCustomerById(int id)
+    public async Task<CustomerDto?> GetCustomerById(int id)
     {
         var customer = await context.Customers.FindAsync(id);
         if (customer != null)
         {
-            return customer;
+            return customer.ToDto();
         }
         {
             var message = $"Customer with ID:{id} Not Found";
@@ -66,9 +70,13 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
         }
     }
     
-    public async Task<IEnumerable<Customer>> GetCustomersWithOrders()
+    public async Task<IEnumerable<CustomerDto>> GetCustomersWithOrders()
     {
-        return await context.Customers.Include(c => c.Orders).ToListAsync();
+        var customers = await context.Customers
+            .Include(c => c.Orders)
+            .Where(c => c.Orders.Count > 0)
+            .ToListAsync();
+        return customers.Select(c => c.ToDto());
     }
     
 
@@ -92,7 +100,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
         }
     }
     
-    public bool CustomerExistsAsync(int id)
+    private bool CustomerExistsAsync(int id)
     {
         return context.Customers.Any(c => c.Id == id);
     }

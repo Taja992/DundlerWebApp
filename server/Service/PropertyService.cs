@@ -2,6 +2,8 @@
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Service.TransferModels.DTOs;
+using Service.TransferModels.Mappers;
 
 
 namespace Service;
@@ -10,9 +12,9 @@ namespace Service;
 
 public interface IPropertyService
 {
-    Task<IEnumerable<Property>> GetAllProperties();
-    Task<Property?> GetPropertyById(int id);
-    Task<Property> AddProperty(Property property);
+    Task<IEnumerable<PropertyDto>> GetAllProperties();
+    Task<PropertyDto?> GetPropertyById(int id);
+    Task<PropertyDto> AddProperty(Property property);
     Task UpdateProperty(Property property);
     Task DeleteProperty(int id);
 }
@@ -24,21 +26,23 @@ public class PropertyService(DunderMifflinContext context, ILogger<CustomerServi
     
     
     
-    public async Task<Property> AddProperty(Property property)
+    public async Task<PropertyDto> AddProperty(Property property)
     {
         context.Properties.Add(property);
         await context.SaveChangesAsync();
-        return property;
+        return property.ToDto();
     }
 
-    public async Task<IEnumerable<Property>> GetAllProperties()
+    public async Task<IEnumerable<PropertyDto>> GetAllProperties()
     {
-        return await context.Properties.ToListAsync();
+        var properties = await context.Properties.ToListAsync();
+        return properties.Select(p => p.ToDto());
     }
 
-    public async Task<Property?> GetPropertyById(int id)
+    public async Task<PropertyDto?> GetPropertyById(int id)
     {
-        return await context.Properties.FindAsync(id);
+        var property = await context.Properties.FindAsync(id);
+        return property?.ToDto();
     }
     
 

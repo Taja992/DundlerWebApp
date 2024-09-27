@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DataAccess.Models;
 using Service;
+using Service.TransferModels.DTOs;
 
 
 namespace API.Controllers;
@@ -11,7 +12,7 @@ public class PropertiesController(IPropertyService service) : ControllerBase
 {
     //Create
     [HttpPost]
-    public async Task<ActionResult<Property>> CreateProperties([FromBody] Property property)
+    public async Task<ActionResult<PropertyDto>> CreateProperties([FromBody] Property property)
     {
         var newProperty = await service.AddProperty(property);
         return CreatedAtAction(nameof(GetProperty), new { id = newProperty.Id }, newProperty);
@@ -19,7 +20,7 @@ public class PropertiesController(IPropertyService service) : ControllerBase
     
     //Read
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Property>>> GetProperties()
+    public async Task<ActionResult<IEnumerable<PropertyDto>>> GetProperties()
     {
         var properties = await service.GetAllProperties();
         return Ok(properties);
@@ -27,7 +28,7 @@ public class PropertiesController(IPropertyService service) : ControllerBase
 
     // Get a single property by ID
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Property>> GetProperty(int id)
+    public async Task<ActionResult<PropertyDto>> GetProperty(int id)
     {
         var property = await service.GetPropertyById(id);
         if (property == null)
