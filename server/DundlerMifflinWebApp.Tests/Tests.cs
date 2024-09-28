@@ -1,41 +1,59 @@
-using DataAccess;
-using DataAccess.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using System.Net.Http.Json;
+using API;
 using Moq;
-using Service;
-using System.Threading.Tasks;
 using Xunit;
+using Service.TransferModels.DTOs;
+using Service.TransferModels.Requests.Create;
 
-namespace DundlerMifflinWebApp.Tests;
-
-public class CustomerServiceTests
+namespace DundlerMifflinWebApp.Tests
 {
-    private readonly Mock<DunderMifflinContext> _mockContext;
-    private readonly Mock<ILogger<CustomerService>> _mockLogger;
-    private readonly CustomerService _customerService;
-
-    public CustomerServiceTests()
+    public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
-        _mockContext = new Mock<DunderMifflinContext>();
-        _mockLogger = new Mock<ILogger<CustomerService>>();
-        _customerService = new CustomerService(_mockContext.Object, _mockLogger.Object);
-    }
+        private readonly CustomWebApplicationFactory<Program> _factory;
 
-    [Fact]
-    public async Task AddCustomer_ShouldAddCustomer()
-    {
-        // Arrange
-        var customer = new Customer { Id = 1, Name = "Some Guy" };
-        var mockDbSet = new Mock<DbSet<Customer>>();
-        _mockContext.Setup(m => m.Customers).Returns(mockDbSet.Object);
+        public Tests(CustomWebApplicationFactory<Program> factory)
+        {
+            _factory = factory;
+        }
 
-        // Act
-        var result = await _customerService.AddCustomer(customer);
+        [Fact]
+        public async Task TryToAddCustomer()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var createCustomerDto = new CreateCustomerDto()
+            {
+                Name = "Lets Test",
+                Address = "Lets Test",
+                Phone = "Lets Test",
+                Email = "Lets Test"
+            };
 
-        // Assert
-        mockDbSet.Verify(m => m.Add(It.IsAny<Customer>()), Times.Once());
-        _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once());
-        Assert.Equal(customer, result);
+            var customerDto = new CustomerDto()
+            {
+                Id = 1,
+                Name = "Lets Test",
+                Address = "Lets Test",
+                Phone = "Lets Test",
+                Email = "Lets Test"
+            };
+
+            _factory.MockCustomerService.Setup(service => service.AddCustomer(It.IsAny<CreateCustomerDto>()))
+                .ReturnsAsync(customerDto);
+
+            // Act
+            var response = await client.PostAsJsonAsync("/Customers", createCustomerDto);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+
+            var createdCustomer = await response.Content.ReadFromJsonAsync<CustomerDto>();
+            Assert.NotNull(createdCustomer);
+            Assert.Equal("Lets Test", createdCustomer.Name);
+            Assert.Equal("Lets Test", createdCustomer.Email);
+            Assert.Equal("Lets Test", createdCustomer.Address);
+            Assert.Equal("Lets Test", createdCustomer.Phone);
+        }
     }
 }

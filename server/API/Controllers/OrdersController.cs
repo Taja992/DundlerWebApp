@@ -2,6 +2,8 @@
 using DataAccess.Models;
 using Service;
 using Service.TransferModels.DTOs;
+using Service.TransferModels.Requests.Create;
+using Service.TransferModels.Requests.Update;
 
 
 namespace API.Controllers;
@@ -14,9 +16,9 @@ public class OrdersController(IOrderService service) : ControllerBase
 {
     // Create an Order
     [HttpPost]
-    public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] Order order)
+    public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderDto createOrderDto)
     {
-        var createdOrder = await service.CreateOrder(order);
+        var createdOrder = await service.CreateOrder(createOrderDto);
         return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
     }
 
@@ -52,16 +54,16 @@ public class OrdersController(IOrderService service) : ControllerBase
     
     // Update Order Info
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
+    public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderDto updateOrderDto)
     {
-        if (id != order.Id)
+        if (id != updateOrderDto.Id)
         {
             return BadRequest();
         }
 
         try
         {
-            await service.UpdateOrder(id, order);
+            await service.UpdateOrder(updateOrderDto);
         }
         catch (KeyNotFoundException)
         {

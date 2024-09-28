@@ -3,39 +3,39 @@ POST http://localhost:5193/Customers
 Content-Type: application/json
 
 {
-  "name": "Fred",
+  "name": "Joebodgfhsfb",
   "address": "123 Ave",
   "phone": "5553622",
-  "email": "hello@somewhere.net"
+  "email": "hello@somewsfdghshhere.net2"
 }
 
 ### Get Customers
 GET http://localhost:5193/Customers
 
 ### Update Customers
-PUT http://localhost:5193/Customers/4
+PUT http://localhost:5193/Customers/11
 Content-Type: application/json
 
 {
-  "id": 4,
-  "name": "John Doe",
+  "id": 11,
+  "name": "saedfhg",
   "address": "123 Main St",
   "phone": "555-1234",
-  "email": "john.doe@example.com"
+  "email": "johntrh.doe@example.comeee"
 }
 
 ### Delete Customer
-DELETE http://localhost:5193/Customers/2
+DELETE http://localhost:5193/Customers/11
 
 ### Get all customers with orders
 GET http://localhost:5193/customers/customer-orders
 
 ### Add Order to Customer
-POST http://localhost:5193/customers/8/orders
+POST http://localhost:5193/customers/3/orders
 Content-Type: application/json
 
 {
-  "id": 3,
+  "id": 4,
   "product": "Paper",
   "quantity": 100,
   "price": 50.0,
@@ -81,7 +81,7 @@ POST http://localhost:5193/paper
 Content-Type: application/json
 
 {
-  "name": "Some Special Paper",
+  "name": "Some Special Paper4",
   "discontinued": false,
   "stock": 100,
   "price": 5.99,
@@ -93,23 +93,23 @@ Content-Type: application/json
 GET http://localhost:5193/paper
 
 ### Get Paper by ID
-GET http://localhost:5193/paper/1
+GET http://localhost:5193/paper/2
 
 ### Get Papers by Property ID
-GET http://localhost:5193/paper/property/1
+GET http://localhost:5193/paper/property/2
 
 ### Update Paper
-PUT http://localhost:5193/paper/1
+PUT http://localhost:5193/paper/2
 Content-Type: application/json
 
 {
-  "id": 1,
-  "name": "No Longer Special",
+  "id": 2,
+  "name": "NSpecial",
   "discontinued": false,
   "stock": 150,
   "price": 6.99,
   "orderEntries": [],
-  "properties": []
+  "properties": [2]
 }
 
 ### Delete Paper
@@ -120,31 +120,31 @@ POST http://localhost:5193/properties
 Content-Type: application/json
 
 {
-  "propertyName": "Water-Resistant, Fire Proof!"
+  "propertyName": "-Resistant, Fire Proof!"
 }
 
 ### Get Properties
 GET http://localhost:5193/properties
 
 ### Update Properties
-PUT http://localhost:5193/properties/1
+PUT http://localhost:5193/properties/4
 Content-Type: application/json
 
 {
-  "propertyName": "No Longer water Resistant, but still fire proof"
+  "id": 4,
+  "propertyName": "hello"
 }
 
 ### Delete Properties
-DELETE http://localhost:5193/properties/1
+DELETE http://localhost:5193/properties/4
 
 ### Create an Order
 POST http://localhost:5193/orders
 Content-Type: application/json
 
 {
-  "id": 1,
   "orderDate": "2024-09-27T00:00:00Z",
-  "deliveryDate": "2024-10-01T00:00:00Z",
+  "deliveryDate": "2024-10-01",
   "status": "Pending",
   "totalAmount": 100.0,
   "customerId": 4
@@ -167,10 +167,10 @@ Content-Type: application/json
   "id": 3,
   "orderDate": "2024-09-27T00:00:00Z",
   "deliveryDate": "2024-10-01",
-  "status": "Shipped",
+  "status": "Pending",
   "totalAmount": 100.0,
   "customerId": 4
 }
 
 ### Delete Order
-DELETE http://localhost:5193/orders/2
+DELETE http://localhost:5193/orders/3

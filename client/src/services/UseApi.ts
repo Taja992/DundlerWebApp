@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { ordersAtom } from '../atoms/atoms';
+import { ordersAtom } from '../atoms/Atoms.ts';
 import { Api } from './Api';
 import { useCallback } from 'react'; // Import useCallback
 

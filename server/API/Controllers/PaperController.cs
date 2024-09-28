@@ -2,6 +2,8 @@
 using DataAccess.Models;
 using Service;
 using Service.TransferModels.DTOs;
+using Service.TransferModels.Requests.Create;
+using Service.TransferModels.Requests.Update;
 
 
 namespace API.Controllers;
@@ -13,9 +15,9 @@ public class PaperController(IPaperService service) : ControllerBase
 {
     // Add Paper
     [HttpPost]
-    public async Task<ActionResult<PaperDto>> AddPaper([FromBody] Paper paper)
+    public async Task<ActionResult<PaperDto>> AddPaper([FromBody] CreatePaperDto createPaperDto)
     {
-        var addedPaper = await service.AddPaper(paper);
+        var addedPaper = await service.AddPaper(createPaperDto);
         
         return CreatedAtAction(nameof(GetPaperById), new { id = addedPaper.Id }, addedPaper);
     }
@@ -50,17 +52,20 @@ public class PaperController(IPaperService service) : ControllerBase
         return Ok(papers);
     }
     
+    
+    // TODO: This can't update a papers properties, needs to be fixed/implemented
+    
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdatePaper(int id, [FromBody] Paper paper)
+    public async Task<IActionResult> UpdatePaper(int id, [FromBody] UpdatePaperDto updatePaperDto)
     {
-        if (id != paper.Id)
+        if (id != updatePaperDto.Id)
         {
             return BadRequest();
         }
 
         try
         {
-            await service.UpdatePaper(paper);
+            await service.UpdatePaper(updatePaperDto);
         }
         catch (KeyNotFoundException)
         {

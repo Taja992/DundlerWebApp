@@ -2,6 +2,8 @@
 using DataAccess.Models;
 using Service;
 using Service.TransferModels.DTOs;
+using Service.TransferModels.Requests.Create;
+using Service.TransferModels.Requests.Update;
 
 
 namespace API.Controllers;
@@ -12,9 +14,9 @@ public class PropertiesController(IPropertyService service) : ControllerBase
 {
     //Create
     [HttpPost]
-    public async Task<ActionResult<PropertyDto>> CreateProperties([FromBody] Property property)
+    public async Task<ActionResult<PropertyDto>> CreateProperties([FromBody] CreatePropertyDto createPropertyDto)
     {
-        var newProperty = await service.AddProperty(property);
+        var newProperty = await service.AddProperty(createPropertyDto);
         return CreatedAtAction(nameof(GetProperty), new { id = newProperty.Id }, newProperty);
     }
     
@@ -41,16 +43,17 @@ public class PropertiesController(IPropertyService service) : ControllerBase
     
     // Update Property
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateProperties(int id, [FromBody] Property property)
+    public async Task<IActionResult> UpdateProperties(int id, [FromBody] UpdatePropertyDto updatePropertyDto)
     {
-        if (id != property.Id)
+        if (id != updatePropertyDto.Id)
         {
+            
             return BadRequest();
         }
         
         try
         {
-            await service.UpdateProperty(property);
+            await service.UpdateProperty(updatePropertyDto);
         }
         catch (KeyNotFoundException)
         {
@@ -58,7 +61,6 @@ public class PropertiesController(IPropertyService service) : ControllerBase
         }
         return NoContent();
     }
-    // Used above in Update to check if the order still exists to stop concurrency issues
 
     
     //Delete

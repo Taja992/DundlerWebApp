@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DataAccess.Models;
 using Service;
 using Service.TransferModels.DTOs;
+using Service.TransferModels.Requests.Create;
+using Service.TransferModels.Requests.Update;
 
 
 namespace API.Controllers;
@@ -15,20 +16,20 @@ public class CustomersController(ICustomerService service) : ControllerBase
     
     //Create
     [HttpPost]
-    public async Task<ActionResult<CustomerDto>> CreateCustomers([FromBody] Customer customer)
+    public async Task<ActionResult<CustomerDto>> CreateCustomers([FromBody] CreateCustomerDto createCustomerDto)
     {
-        var createdCustomer = await service.AddCustomer(customer);
+        var createdCustomer = await service.AddCustomer(createCustomerDto);
         return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
     }
     
     // Add Order to Customer
     [HttpPost("{customerId:int}/orders")]
-    public async Task<IActionResult> AddOrderToCustomer(int customerId, [FromBody] Order order)
+    public async Task<IActionResult> AddOrderToCustomer(int customerId, [FromBody] OrderDto orderDto)
     {
         try
         {
-            await service.AddOrderToCustomer(customerId, order);
-            return Ok(order);
+            await service.AddOrderToCustomer(customerId, orderDto);
+            return Ok(orderDto);
         }
         catch (KeyNotFoundException)
         {
@@ -67,16 +68,16 @@ public class CustomersController(ICustomerService service) : ControllerBase
     
     //Update
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateCustomer(int id, [FromBody] Customer customer)
+    public async Task<IActionResult> UpdateCustomer(int id, [FromBody] UpdateCustomerDto updateCustomerDto)
     {
-        if (id != customer.Id)
+        if (id != updateCustomerDto.Id)
         {
             return BadRequest();
         }
 
         try
         {
-            await service.UpdateCustomer(customer);
+            await service.UpdateCustomer(updateCustomerDto);
         }
         catch (KeyNotFoundException)
         {

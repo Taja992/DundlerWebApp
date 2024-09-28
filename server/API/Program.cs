@@ -1,58 +1,82 @@
 using DataAccess;
+using DataAccess.Interfaces;
 using DataAccess.Models;
+using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Service;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace API;
 
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddDbContext<DunderMifflinContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
-
-
-// Register Services
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IPaperService, PaperService>();
-builder.Services.AddScoped<IPropertyService, PropertyService>();
-
-// Configure CORS
-builder.Services.AddCors(options =>
+public class Program
 {
-    options.AddDefaultPolicy(b =>
+    public static void Main(string[] args)
     {
-        b.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
+        var builder = WebApplication.CreateBuilder(args);
 
+        // Add services to the container.
+        builder.Services.AddControllers();
 
+        // Check if running in test mode
+        var isTest = builder.Environment.IsEnvironment("Test");
 
+        // if (isTest)
+        // {
+        //     builder.Services.AddDbContext<DunderMifflinContext>(options =>
+        //         options.UseInMemoryDatabase("InMemoryDbForTesting"));
+        // }
+        // else
+        // {
+            builder.Services.AddDbContext<DunderMifflinContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
+        //}
 
-// Add services to the container.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+        // Register the repositories
+        builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+        builder.Services.AddScoped<IPaperRepository, PaperRepository>();
+        builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 
-var app = builder.Build();
+        // Register Services
+        builder.Services.AddScoped<ICustomerService, CustomerService>();
+        builder.Services.AddScoped<IOrderService, OrderService>();
+        builder.Services.AddScoped<IPaperService, PaperService>();
+        builder.Services.AddScoped<IPropertyService, PropertyService>();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dunder Mifflin API V1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-    });
+        // Configure CORS
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(b =>
+            {
+                b.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
+
+        // Add services to the container.
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dunder Mifflin API V1");
+                c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+            });
+        }
+
+        app.UseHttpsRedirection();
+
+        // Enable CORS
+        app.UseCors();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-
-// Enable CORS
-app.UseCors();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();

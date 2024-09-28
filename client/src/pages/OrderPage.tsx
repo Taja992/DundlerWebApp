@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { ordersAtom } from '../atoms/atoms';
-import { useFetchOrders } from '../services/useApi';
+import { ordersAtom } from '../atoms/Atoms';
+import { useFetchOrders } from '../services/UseApi';
 
 const OrderPage: React.FC = () => {
     const [orders] = useAtom(ordersAtom);

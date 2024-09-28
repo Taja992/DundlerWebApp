@@ -1,9 +1,11 @@
 ﻿using DataAccess;
+using DataAccess.Interfaces;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service.TransferModels.DTOs;
-using Service.TransferModels.Mappers;
+using Service.TransferModels.Requests.Create;
+using Service.TransferModels.Requests.Update;
 
 
 namespace Service;
@@ -13,101 +15,110 @@ public interface ICustomerService
 {
     Task<IEnumerable<CustomerDto>> GetCustomers();
     Task<CustomerDto?> GetCustomerById(int id);
-    Task<CustomerDto> AddCustomer(Customer customer);
-    Task UpdateCustomer(Customer customer);
+    Task<CustomerDto> AddCustomer(CreateCustomerDto createCustomerDto);
+    Task UpdateCustomer(UpdateCustomerDto updateCustomerDto);
     Task DeleteCustomer(int id);
-    Task AddOrderToCustomer(int customerId, Order order);
+    Task AddOrderToCustomer(int customerId, OrderDto orderDto);
     Task<IEnumerable<CustomerDto>> GetCustomersWithOrders();
 }
 
 // As a customer I want to be able to see my own order history.
 // This involves retrieving the order history for a specific customer.
 
-public class CustomerService(DunderMifflinContext context, ILogger<CustomerService> logger) : ICustomerService
+public class CustomerService(DunderMifflinContext context, ILogger<CustomerService> logger, ICustomerRepository customerRepository) : ICustomerService
 {
+    
 
-    public async Task<CustomerDto> AddCustomer(Customer customer)
+    public async Task<CustomerDto> AddCustomer(CreateCustomerDto createCustomerDto)
     {
-        context.Customers.Add(customer);
-        await context.SaveChangesAsync();
-        return customer.ToDto();
+        logger.LogInformation("Added Customer");
+        //Add validation for createCustomerDto
+        var customer = createCustomerDto.ToCustomer();
+        Customer newCustomer = await customerRepository.AddCustomer(customer);
+        return new CustomerDto().FromEntity(newCustomer);
     }
+
     
-    
-    public async Task AddOrderToCustomer(int customerId, Order order)
+    public async Task AddOrderToCustomer(int customerId, OrderDto orderDto)
     {
-        var customer = await context.Customers.FindAsync(customerId);
-        
+        logger.LogInformation("Added Order to Customer");
+        var customer = await customerRepository.GetCustomerById(customerId);
         if (customer == null)
         {
             var message = $"Customer with ID {customerId} not found.";
             logger.LogError("Error in AddOrderToCustomerAsync: {Message}", message);
             throw new KeyNotFoundException(message);
         }
-        customer.Orders.Add(order);
-        await context.SaveChangesAsync();
+
+        var addedOrder = orderDto.ToOrder();
+
+        await customerRepository.AddOrderToCustomer(customerId, addedOrder);
     }
     
     
     public async Task<IEnumerable<CustomerDto>> GetCustomers()
     {
-        var customers = await context.Customers.ToListAsync();
-        return customers.Select(c => c.ToDto());
+        logger.LogInformation("Retrieved all Customers");
+        var customers = await customerRepository.GetAllCustomers();
+        return customers.Select(c => new CustomerDto().FromEntity(c));
 
     }
 
     public async Task<CustomerDto?> GetCustomerById(int id)
     {
-        var customer = await context.Customers.FindAsync(id);
+        logger.LogInformation("Retrieved Customer via Id");
+        var customer = await customerRepository.GetCustomerById(id);
         if (customer != null)
         {
-            return customer.ToDto();
+            return new CustomerDto().FromEntity(customer);
         }
         {
             var message = $"Customer with ID:{id} Not Found";
-            logger.LogError("Error in GetCustomerByIdAsync: {Message}", message);
+            logger.LogError("Error in GetCustomerById: {Message}", message);
             throw new KeyNotFoundException(message);
         }
     }
     
     public async Task<IEnumerable<CustomerDto>> GetCustomersWithOrders()
     {
-        var customers = await context.Customers
-            .Include(c => c.Orders)
-            .Where(c => c.Orders.Count > 0)
-            .ToListAsync();
-        return customers.Select(c => c.ToDto());
+        logger.LogInformation("Retrieved Customers with Orders");
+        var customers = await customerRepository.GetCustomersWithOrders();
+        return customers.Select(c => new CustomerDto().FromEntity(c));
     }
     
 
-    public async Task UpdateCustomer(Customer customer)
+    public async Task UpdateCustomer(UpdateCustomerDto updateCustomerDto)
     {
-        context.Entry(customer).State = EntityState.Modified;
-        try
+        logger.LogInformation("Updating Customer");
+        if (!CustomerExists(updateCustomerDto.Id))
         {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (CustomerExistsAsync(customer.Id))
-            {
-                logger.LogError("Concurrency error in UpdateCustomer for Customer ID {OrderId}", customer.Id);
-                throw;
-            }
-            var message = $"Customer with ID {customer.Id} not found.";
+            var message = $"Customer with ID {updateCustomerDto.Id} not found.";
             logger.LogError("Error in UpdateCustomerAsync: {Message}", message);
             throw new KeyNotFoundException(message);
         }
+        var customer = updateCustomerDto.ToCustomer();
+        //I think this is redundant try/catch because I have nothing in my repository checking
+        //for concurrency but...yeah
+        try
+        {
+            await customerRepository.UpdateCustomer(customer);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            logger.LogError("Concurrency error in UpdateCustomerAsync: {Message}", ex.Message);
+            throw;
+        }
     }
-    
-    private bool CustomerExistsAsync(int id)
+    // I also dont know if this is necessary but its here for now
+    private bool CustomerExists(int id)
     {
         return context.Customers.Any(c => c.Id == id);
     }
 
     public async Task DeleteCustomer(int id)
     {
-        var customer = await context.Customers.FindAsync(id);
+        logger.LogInformation("Deleted Customer id:{id}", id);
+        var customer = await customerRepository.GetCustomerById(id);
         if (customer == null)
         {
             var message = $"Customer with ID {id} not found.";
@@ -115,8 +126,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
             throw new KeyNotFoundException(message);
         }
 
-        context.Customers.Remove(customer);
-        await context.SaveChangesAsync();
+        await customerRepository.DeleteCustomer(id);
 
     }
     
