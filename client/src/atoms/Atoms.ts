@@ -56,3 +56,4 @@ export const isBoxVisibleAtom = atom<boolean>(false);
 export const selectedPaperIdAtom = atom<number | null>(null);
 export const quantityAtom = atom<number>(0);
 
+

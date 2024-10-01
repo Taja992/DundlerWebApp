@@ -98,17 +98,15 @@ GET http://localhost:5193/paper/2
 GET http://localhost:5193/paper/property/2
 
 ### Update Paper
-PUT http://localhost:5193/paper/2
+PUT http://localhost:5193/paper/4
 Content-Type: application/json
 
 {
-  "id": 2,
+  "id": 4,
   "name": "NSpecial",
   "discontinued": false,
   "stock": 150,
-  "price": 6.99,
-  "orderEntries": [],
-  "properties": [2]
+  "price": 6.99
 }
 
 ### Delete Paper
@@ -159,16 +157,16 @@ GET http://localhost:5193/orders/3
 GET http://localhost:5193/orders/customer/3
 
 ### Update Order
-PUT http://localhost:5193/orders/3
+PUT http://localhost:5193/orders/21
 Content-Type: application/json
 
 {
-  "id": 3,
+  "id": 21,
   "orderDate": "2024-09-27T00:00:00Z",
   "deliveryDate": "2024-10-01",
-  "status": "Pending",
+  "status": "Finished",
   "totalAmount": 100.0,
-  "customerId": 4
+  "customerId": 7
 }
 
 ### Delete Order

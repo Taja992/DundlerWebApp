@@ -80,6 +80,21 @@ export const createOrder = async (orderData: Omit<Order, 'id'>): Promise<Order> 
     }
 };
 
+export const updateOrder = async (order: Order): Promise<Order> => {
+    try{
+        const response = await axios.put(`${apiBaseUrl}/orders/${order.id}`, order, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+            },
+        })
+        return response.data
+    } catch (error){
+        console.error('Error updating order', error);
+        throw error;
+    }
+}
+
 
 
 
