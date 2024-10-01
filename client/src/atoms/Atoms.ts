@@ -51,3 +51,8 @@ export const newPropertyAtom = atom<Property>({
     papers: []
 });
 
+// UI State Atoms
+export const isBoxVisibleAtom = atom<boolean>(false);
+export const selectedPaperIdAtom = atom<number | null>(null);
+export const quantityAtom = atom<number>(0);
+

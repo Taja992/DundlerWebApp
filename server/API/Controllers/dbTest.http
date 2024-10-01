@@ -49,9 +49,8 @@ Content-Type: application/json
 
 {
   "quantity": 10,
-  "productId": 3,
-  "orderId": 12,
-  "status": "good"
+  "productId": null,
+  "orderId": null
 }
 
 ### Get All OrderEntries

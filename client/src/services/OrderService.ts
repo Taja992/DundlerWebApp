@@ -4,7 +4,7 @@ import { Order } from './Api';
 
 const apiBaseUrl = 'http://localhost:5193';
 
-export const fetchOrders = async (): Promise<Order[]> => {
+export const fetchAllOrders = async (): Promise<Order[]> => {
     try {
         const response = await axios.get(`${apiBaseUrl}/Orders`, {
             headers: {
@@ -18,6 +18,20 @@ export const fetchOrders = async (): Promise<Order[]> => {
         return response.data;
     } catch (error) {
         console.error('Error fetching orders:', error);
+        throw error;
+    }
+};
+
+export const fetchOrder = async (orderId: string): Promise<Order> => {
+    try {
+        const response = await axios.get(`${apiBaseUrl}/orders/${orderId}`, {
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+    return response.data
+    } catch (error) {
+        console.error('Error fetching order', error);
         throw error;
     }
 };

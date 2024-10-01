@@ -4,7 +4,7 @@ import {useAtom} from "jotai";
 import {newPropertyAtom, paperAtom} from "../atoms/Atoms.ts";
 import {fetchPapers} from "../services/PaperService.ts";
 import {createProperty} from "../services/PropertyService.ts";
-import { fetchOrders } from '../services/OrderService';
+import { fetchAllOrders } from '../services/OrderService';
 import {ordersAtom} from '../atoms/Atoms';
 
 
@@ -16,19 +16,12 @@ const AdminPage: React.FC = () => {
     const [orders, setOrders] = useAtom(ordersAtom);
 
 
-    useEffect(() => {
-        const fetchedPapers = async () => {
-            const fetchedPapers = await fetchPapers();
-            setPapers(fetchedPapers);
-        };
-        fetchedPapers();
-    }, [setPapers]);
 
     useEffect(() => {
         const loadData = async () => {
             try {
                 const [fetchedOrders, fetchedPapers] = await Promise.all([
-                    fetchOrders(),
+                    fetchAllOrders(),
                     fetchPapers()
                 ]);
                 setOrders(fetchedOrders);
