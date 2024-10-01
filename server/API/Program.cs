@@ -1,9 +1,10 @@
+using System.Text.Json.Serialization;
 using DataAccess;
 using DataAccess.Interfaces;
-using DataAccess.Models;
 using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Service;
+using Service.TransferModels;
 
 namespace API;
 
@@ -14,7 +15,12 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
 
         // Check if running in test mode
         var isTest = builder.Environment.IsEnvironment("Test");
@@ -52,6 +58,9 @@ public class Program
                     .AllowAnyHeader();
             });
         });
+        
+        // Add AutoMapper
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
 
         // Add services to the container.
         builder.Services.AddEndpointsApiExplorer();
@@ -66,7 +75,7 @@ public class Program
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dunder Mifflin API V1");
-                c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+                c.RoutePrefix = string.Empty;
             });
         }
 

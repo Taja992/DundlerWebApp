@@ -1,4 +1,5 @@
-﻿using DataAccess.Interfaces;
+﻿using AutoMapper;
+using DataAccess.Interfaces;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ public interface IPropertyService
     Task DeleteProperty(int id);
 }
 
-public class PropertyService(ILogger<CustomerService> logger, IPropertyRepository propertyRepository) : IPropertyService
+public class PropertyService(ILogger<CustomerService> logger, IPropertyRepository propertyRepository, IMapper mapper) : IPropertyService
 {
     // As a business admin I want to be able to create custom properties for paper products (water-resistant, study, etc).
     // This involves creating and managing custom properties for products.
@@ -29,13 +30,13 @@ public class PropertyService(ILogger<CustomerService> logger, IPropertyRepositor
     {
         var property = createPropertyDto.ToProperty();
         Property newProperty = await propertyRepository.AddProperty(property);
-        return new PropertyDto().FromEntity(newProperty);
+        return new PropertyDto().FromEntity(newProperty, mapper);
     }
 
     public async Task<IEnumerable<PropertyDto>> GetAllProperties()
     {
         var properties = await propertyRepository.GetAllProperties();
-        return properties.Select(c => new PropertyDto().FromEntity(c));
+        return properties.Select(c => new PropertyDto().FromEntity(c, mapper));
     }
 
     public async Task<PropertyDto?> GetPropertyById(int id)
@@ -43,7 +44,7 @@ public class PropertyService(ILogger<CustomerService> logger, IPropertyRepositor
         var property = await propertyRepository.GetPropertyById(id);
         if (property != null)
         {
-            return new PropertyDto().FromEntity(property);
+            return new PropertyDto().FromEntity(property, mapper);
         }
 
         {

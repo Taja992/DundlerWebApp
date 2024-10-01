@@ -1,4 +1,5 @@
-﻿using DataAccess;
+﻿using AutoMapper;
+using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ public interface IPaperService
 }
 
 
-public class PaperService(ILogger<CustomerService> logger, IPaperRepository paperRepository) : IPaperService
+public class PaperService(ILogger<CustomerService> logger, IPaperRepository paperRepository, IMapper mapper) : IPaperService
 {
     // As a customer I want to have a product overview with filtering, ordering and full-text search preferences.
     // This involves retrieving a list of products with various filtering, ordering, and search options.
@@ -33,13 +34,13 @@ public class PaperService(ILogger<CustomerService> logger, IPaperRepository pape
     {
         var paper = createPaperDto.ToPaper();
         Paper newPaper = await paperRepository.AddPaper(paper);
-        return new PaperDto().FromEntity(newPaper);
+        return new PaperDto().FromEntity(newPaper, mapper);
     }
     
     public async Task<IEnumerable<PaperDto>> GetAllPaper()
     {
         var paper = await paperRepository.GetAllPaper();
-        return paper.Select(p => new PaperDto().FromEntity(p));
+        return paper.Select(p => new PaperDto().FromEntity(p, mapper));
     }
 
     public async Task<PaperDto?> GetPaperById(int id)
@@ -47,7 +48,7 @@ public class PaperService(ILogger<CustomerService> logger, IPaperRepository pape
         var paper = await paperRepository.GetPaperById(id);
         if (paper != null)
         {
-            return new PaperDto().FromEntity(paper);
+            return new PaperDto().FromEntity(paper, mapper);
         }
         {
             var message = $"Paper with ID:{id} Not Found";
@@ -59,7 +60,7 @@ public class PaperService(ILogger<CustomerService> logger, IPaperRepository pape
     public async Task<IEnumerable<PaperDto>> GetPaperByProperty(int propertyId)
     {
         var paper = await paperRepository.GetPaperByProperty(propertyId);
-        return paper.Select(p => new PaperDto().FromEntity(p));
+        return paper.Select(p => new PaperDto().FromEntity(p, mapper));
 
     }
     

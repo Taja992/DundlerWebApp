@@ -1,4 +1,5 @@
-﻿using DataAccess;
+﻿using AutoMapper;
+using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ public interface IOrderService
     Task DeleteOrder(int id);
 }
 
-public class OrderService(DunderMifflinContext context, ILogger<CustomerService> logger, IOrderRepository orderRepository) : IOrderService
+public class OrderService(DunderMifflinContext context, ILogger<CustomerService> logger, IOrderRepository orderRepository, IMapper mapper) : IOrderService
 {
     //     As a customer I want to be able to place an order with X order entries of products.
     //     This involves creating a new order with multiple order entries.
@@ -36,14 +37,14 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
     {
         var order = createOrderDto.ToOrder();
         Order newOrder = await orderRepository.CreateOrder(order);
-        return new OrderDto().FromEntity(newOrder);
+        return new OrderDto().FromEntity(newOrder, mapper);
     }
     
 
     public async Task<IEnumerable<OrderDto>> GetOrders()
     {
         var orders = await orderRepository.GetOrders();
-        return orders.Select(o => new OrderDto().FromEntity(o));
+        return orders.Select(o => new OrderDto().FromEntity(o, mapper));
     }
 
     public async Task<OrderDto?> GetOrder(int id)
@@ -51,7 +52,7 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
         var order = await orderRepository.GetOrder(id);
         if (order != null)
         {
-            return new OrderDto().FromEntity(order);
+            return new OrderDto().FromEntity(order, mapper);
         }
         {
             var message = $"Order with ID:{id} Not Found";
@@ -63,7 +64,7 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
     public async Task<IEnumerable<OrderDto>> GetOrdersByCustomerId(int customerId)
     {
         var order = await orderRepository.GetOrdersByCustomerId(customerId);
-        return order.Select(o => new OrderDto().FromEntity(o));
+        return order.Select(o => new OrderDto().FromEntity(o, mapper));
     }
 
     public async Task UpdateOrder(UpdateOrderDto updateOrderDto)

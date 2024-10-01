@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿using AutoMapper;
+using DataAccess.Models;
 
 
 namespace Service.TransferModels.DTOs;
@@ -12,18 +13,24 @@ namespace Service.TransferModels.DTOs;
         public double Price { get; set; }
         public List<OrderEntryDto> OrderEntries { get; set; } = new();
         public List<PropertyDto> Properties { get; set; } = new();
-
-        public PaperDto FromEntity(Paper paper)
+        
+        
+        public PaperDto FromEntity(Paper paper, IMapper mapper)
         {
-            return new PaperDto
-            {
-                Id = paper.Id,
-                Name = paper.Name,
-                Discontinued = paper.Discontinued,
-                Stock = paper.Stock,
-                Price = paper.Price,
-                OrderEntries = paper.OrderEntries.Select(oe => new OrderEntryDto().FromEntity(oe)).ToList(),
-                Properties = paper.Properties.Select(p => new PropertyDto().FromEntity(p)).ToList()
-            };
+            return mapper.Map<PaperDto>(paper);
         }
+
+        // public PaperDto FromEntity(Paper paper, IMapper mapper)
+        // {
+        //     return new PaperDto
+        //     {
+        //         Id = paper.Id,
+        //         Name = paper.Name,
+        //         Discontinued = paper.Discontinued,
+        //         Stock = paper.Stock,
+        //         Price = paper.Price,
+        //         OrderEntries = paper.OrderEntries.Select(oe => new OrderEntryDto().FromEntity(oe, mapper)).ToList(),
+        //         Properties = paper.Properties.Select(p => new PropertyDto().FromEntity(p)).ToList()
+        //     };
+        // }
     }

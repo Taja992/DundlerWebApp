@@ -49,8 +49,8 @@ Content-Type: application/json
 
 {
   "quantity": 10,
-  "productId": 1,
-  "orderId": 1,
+  "productId": 3,
+  "orderId": 12,
   "status": "good"
 }
 
@@ -120,7 +120,7 @@ POST http://localhost:5193/properties
 Content-Type: application/json
 
 {
-  "propertyName": "-Resistant, Fire Proof!"
+  "propertyName": "last property"
 }
 
 ### Get Properties
@@ -144,7 +144,7 @@ Content-Type: application/json
 
 {
   "orderDate": "2024-09-27T00:00:00Z",
-  "deliveryDate": "2024-10-01",
+  "deliveryDate": null,
   "status": "Pending",
   "totalAmount": 100.0,
   "customerId": 4
@@ -157,7 +157,7 @@ GET http://localhost:5193/orders
 GET http://localhost:5193/orders/3
 
 ### Get Orders by Customer ID
-GET http://localhost:5193/orders/customer/4
+GET http://localhost:5193/orders/customer/3
 
 ### Update Order
 PUT http://localhost:5193/orders/3

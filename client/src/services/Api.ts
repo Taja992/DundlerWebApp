@@ -9,6 +9,38 @@
  * ---------------------------------------------------------------
  */
 
+export interface CreateCustomerDto {
+  name?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+}
+
+export interface CreateOrderDto {
+  /** @format date-time */
+  orderDate?: string;
+  /** @format date */
+  deliveryDate?: string | null;
+  status?: string | null;
+  /** @format double */
+  totalAmount?: number;
+  /** @format int32 */
+  customerId?: number | null;
+}
+
+export interface CreatePaperDto {
+  name?: string | null;
+  discontinued?: boolean;
+  /** @format int32 */
+  stock?: number;
+  /** @format double */
+  price?: number;
+}
+
+export interface CreatePropertyDto {
+  propertyName?: string | null;
+}
+
 export interface Customer {
   /** @format int32 */
   id?: number;
@@ -22,7 +54,7 @@ export interface Customer {
 export interface CustomerDto {
   /** @format int32 */
   id?: number;
-  name: string | null;
+  name?: string | null;
   address?: string | null;
   phone?: string | null;
   email?: string | null;
@@ -57,6 +89,8 @@ export interface OrderDto {
   totalAmount?: number;
   /** @format int32 */
   customerId?: number | null;
+  customer?: CustomerDto;
+  orderEntries?: OrderEntryDto[] | null;
 }
 
 export interface OrderEntry {
@@ -70,6 +104,19 @@ export interface OrderEntry {
   orderId?: number | null;
   order?: Order;
   product?: Paper;
+}
+
+export interface OrderEntryDto {
+  /** @format int32 */
+  id?: number;
+  /** @format int32 */
+  quantity?: number;
+  /** @format int32 */
+  productId?: number | null;
+  /** @format int32 */
+  orderId?: number | null;
+  order?: OrderDto;
+  product?: PaperDto;
 }
 
 export interface Paper {
@@ -94,6 +141,8 @@ export interface PaperDto {
   stock?: number;
   /** @format double */
   price?: number;
+  orderEntries?: OrderEntryDto[] | null;
+  properties?: PropertyDto[] | null;
 }
 
 export interface Property {
@@ -104,6 +153,48 @@ export interface Property {
 }
 
 export interface PropertyDto {
+  /** @format int32 */
+  id?: number;
+  propertyName?: string | null;
+  papers?: PaperDto[] | null;
+}
+
+export interface UpdateCustomerDto {
+  /** @format int32 */
+  id?: number;
+  name?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+}
+
+export interface UpdateOrderDto {
+  /** @format int32 */
+  id?: number;
+  /** @format date-time */
+  orderDate?: string;
+  /** @format date */
+  deliveryDate?: string | null;
+  status?: string | null;
+  /** @format double */
+  totalAmount?: number;
+  /** @format int32 */
+  customerId?: number | null;
+}
+
+export interface UpdatePaperDto {
+  /** @format int32 */
+  id?: number;
+  name?: string | null;
+  discontinued?: boolean;
+  /** @format int32 */
+  stock?: number;
+  /** @format double */
+  price?: number;
+  propertyIds?: number[] | null;
+}
+
+export interface UpdatePropertyDto {
   /** @format int32 */
   id?: number;
   propertyName?: string | null;
@@ -256,7 +347,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CustomersCreate
      * @request POST:/Customers
      */
-    customersCreate: (data: Customer, params: RequestParams = {}) =>
+    customersCreate: (data: CreateCustomerDto, params: RequestParams = {}) =>
       this.request<CustomerDto, any>({
         path: `/Customers`,
         method: "POST",
@@ -288,7 +379,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name OrdersCreate
      * @request POST:/Customers/{customerId}/orders
      */
-    ordersCreate: (customerId: number, data: Order, params: RequestParams = {}) =>
+    ordersCreate: (customerId: number, data: OrderDto, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/Customers/${customerId}/orders`,
         method: "POST",
@@ -319,7 +410,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CustomersUpdate
      * @request PUT:/Customers/{id}
      */
-    customersUpdate: (id: number, data: Customer, params: RequestParams = {}) =>
+    customersUpdate: (id: number, data: UpdateCustomerDto, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/Customers/${id}`,
         method: "PUT",
@@ -473,7 +564,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name OrdersCreate
      * @request POST:/Orders
      */
-    ordersCreate: (data: Order, params: RequestParams = {}) =>
+    ordersCreate: (data: CreateOrderDto, params: RequestParams = {}) =>
       this.request<OrderDto, any>({
         path: `/Orders`,
         method: "POST",
@@ -520,7 +611,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name OrdersUpdate
      * @request PUT:/Orders/{id}
      */
-    ordersUpdate: (id: number, data: Order, params: RequestParams = {}) =>
+    ordersUpdate: (id: number, data: UpdateOrderDto, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/Orders/${id}`,
         method: "PUT",
@@ -566,7 +657,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name PaperCreate
      * @request POST:/Paper
      */
-    paperCreate: (data: Paper, params: RequestParams = {}) =>
+    paperCreate: (data: CreatePaperDto, params: RequestParams = {}) =>
       this.request<PaperDto, any>({
         path: `/Paper`,
         method: "POST",
@@ -613,7 +704,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name PaperUpdate
      * @request PUT:/Paper/{id}
      */
-    paperUpdate: (id: number, data: Paper, params: RequestParams = {}) =>
+    paperUpdate: (id: number, data: UpdatePaperDto, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/Paper/${id}`,
         method: "PUT",
@@ -659,7 +750,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name PropertiesCreate
      * @request POST:/Properties
      */
-    propertiesCreate: (data: Property, params: RequestParams = {}) =>
+    propertiesCreate: (data: CreatePropertyDto, params: RequestParams = {}) =>
       this.request<PropertyDto, any>({
         path: `/Properties`,
         method: "POST",
@@ -706,7 +797,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name PropertiesUpdate
      * @request PUT:/Properties/{id}
      */
-    propertiesUpdate: (id: number, data: Property, params: RequestParams = {}) =>
+    propertiesUpdate: (id: number, data: UpdatePropertyDto, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/Properties/${id}`,
         method: "PUT",

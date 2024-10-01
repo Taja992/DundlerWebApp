@@ -1,6 +1,6 @@
 // src/pages/HomePage.tsx
-import React from 'react';
 import {useNavigate} from "react-router-dom";
+import React from "react";
 
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
@@ -10,14 +10,14 @@ const HomePage: React.FC = () => {
     };
 
     const goToOrderPage = () => {
-        navigate('/orders');
+        navigate('/customer');
     };
 
     return (
         <div>
             <h1>Home Page</h1>
             <button onClick={goToAdminPage}>Admin Page</button>
-            <button onClick={goToOrderPage}>Order Page</button>
+            <button onClick={goToOrderPage}>Customer Page</button>
         </div>
     );
 };
