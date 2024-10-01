@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿using AutoMapper;
+using DataAccess.Models;
 
 
 namespace Service.TransferModels.DTOs;
@@ -13,34 +14,46 @@ public class OrderDto
     public int? CustomerId { get; set; }
     public CustomerDto? Customer { get; set; }
     public List<OrderEntryDto> OrderEntries { get; set; } = new();
-
-    public OrderDto FromEntity(Order order, bool includeCustomer = true)
+    
+    
+    public OrderDto FromEntity(Order order, IMapper mapper)
     {
-        return new OrderDto
-        {
-            Id = order.Id,
-            OrderDate = order.OrderDate,
-            DeliveryDate = order.DeliveryDate,
-            Status = order.Status,
-            TotalAmount = order.TotalAmount,
-            CustomerId = order.CustomerId,
-            // If includeCustomer is true, convert Customer to CustomerDto, otherwise set to null
-            Customer = includeCustomer && order.Customer != null ? new CustomerDto().FromEntity(order.Customer, false) : null,
-            OrderEntries = order.OrderEntries.Select(oe => new OrderEntryDto().FromEntity(oe)).ToList()
-        };
+        return mapper.Map<OrderDto>(order);
+    }
+    
+    
+    public Order ToOrder(IMapper mapper)
+    {
+        return mapper.Map<Order>(this);
     }
 
-    public Order ToOrder()
-    {
-        return new Order
-        {
-            Id = Id,
-            OrderDate = OrderDate,
-            DeliveryDate = DeliveryDate,
-            Status = Status,
-            TotalAmount = TotalAmount,
-            CustomerId = CustomerId,
-            OrderEntries = OrderEntries.Select(oe => oe.ToOrderEntry()).ToList()
-        };
-    }
+    // public OrderDto FromEntity(Order order, bool includeCustomer = true)
+    // {
+    //     return new OrderDto
+    //     {
+    //         Id = order.Id,
+    //         OrderDate = order.OrderDate,
+    //         DeliveryDate = order.DeliveryDate,
+    //         Status = order.Status,
+    //         TotalAmount = order.TotalAmount,
+    //         CustomerId = order.CustomerId,
+    //         // If includeCustomer is true, convert Customer to CustomerDto, otherwise set to null
+    //         Customer = includeCustomer && order.Customer != null ? new CustomerDto().FromEntity(order.Customer, false) : null,
+    //         OrderEntries = order.OrderEntries.Select(oe => new OrderEntryDto().FromEntity(oe)).ToList()
+    //     };
+    // }
+
+    // public Order ToOrder()
+    // {
+    //     return new Order
+    //     {
+    //         Id = Id,
+    //         OrderDate = OrderDate,
+    //         DeliveryDate = DeliveryDate,
+    //         Status = Status,
+    //         TotalAmount = TotalAmount,
+    //         CustomerId = CustomerId,
+    //         OrderEntries = OrderEntries.Select(oe => oe.ToOrderEntry()).ToList()
+    //     };
+    // }
 }

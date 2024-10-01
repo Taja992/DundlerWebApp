@@ -14,6 +14,16 @@ export const newCustomerAtom = atom<{ name: string }>({ name: '' });
 // Order Atoms
 export const ordersAtom = atom<Order[]>([]);
 export const selectedOrderAtom = atom<Order | null>(null);
+export const customerOrderAtom = atom<Order[]>([]);
+export const createOrderAtom = atom<Order>({
+    orderDate: '',
+    deliveryDate: '',
+    status: 'Pending',
+    totalAmount: 0,
+    customerId: null,
+    orderEntries: []
+})
+
 
 // OrderEntryAtoms
 export const orderEntriesAtom = atom<OrderEntry[]>([]);
@@ -40,3 +50,4 @@ export const newPropertyAtom = atom<Property>({
     propertyName: '',
     papers: []
 });
+

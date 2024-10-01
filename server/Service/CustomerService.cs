@@ -1,4 +1,5 @@
-﻿using DataAccess;
+﻿using AutoMapper;
+using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ public interface ICustomerService
 // As a customer I want to be able to see my own order history.
 // This involves retrieving the order history for a specific customer.
 
-public class CustomerService(DunderMifflinContext context, ILogger<CustomerService> logger, ICustomerRepository customerRepository) : ICustomerService
+public class CustomerService(DunderMifflinContext context, ILogger<CustomerService> logger, ICustomerRepository customerRepository, IMapper mapper) : ICustomerService
 {
     
 
@@ -35,7 +36,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
         //Add validation for createCustomerDto
         var customer = createCustomerDto.ToCustomer();
         Customer newCustomer = await customerRepository.AddCustomer(customer);
-        return new CustomerDto().FromEntity(newCustomer);
+        return new CustomerDto().FromEntity(newCustomer, mapper);
     }
 
     
@@ -50,7 +51,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
             throw new KeyNotFoundException(message);
         }
 
-        var addedOrder = orderDto.ToOrder();
+        var addedOrder = orderDto.ToOrder(mapper);
 
         await customerRepository.AddOrderToCustomer(customerId, addedOrder);
     }
@@ -60,7 +61,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
     {
         logger.LogInformation("Retrieved all Customers");
         var customers = await customerRepository.GetAllCustomers();
-        return customers.Select(c => new CustomerDto().FromEntity(c));
+        return customers.Select(c => new CustomerDto().FromEntity(c, mapper));
 
     }
 
@@ -70,7 +71,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
         var customer = await customerRepository.GetCustomerById(id);
         if (customer != null)
         {
-            return new CustomerDto().FromEntity(customer);
+            return new CustomerDto().FromEntity(customer, mapper);
         }
         {
             var message = $"Customer with ID:{id} Not Found";
@@ -83,7 +84,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
     {
         logger.LogInformation("Retrieved Customers with Orders");
         var customers = await customerRepository.GetCustomersWithOrders();
-        return customers.Select(c => new CustomerDto().FromEntity(c));
+        return customers.Select(c => new CustomerDto().FromEntity(c, mapper));
     }
     
 
