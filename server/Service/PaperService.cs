@@ -2,6 +2,7 @@
 using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service.TransferModels.DTOs;
@@ -23,7 +24,10 @@ public interface IPaperService
 }
 
 
-public class PaperService(ILogger<CustomerService> logger, IPaperRepository paperRepository, IMapper mapper) : IPaperService
+public class PaperService(ILogger<CustomerService> logger, 
+    IPaperRepository paperRepository, 
+    IMapper mapper, IValidator<CreatePaperDto> createValidator,
+    IValidator<UpdatePaperDto> updateValidator) : IPaperService
 {
     // As a customer I want to have a product overview with filtering, ordering and full-text search preferences.
     // This involves retrieving a list of products with various filtering, ordering, and search options.
@@ -32,6 +36,7 @@ public class PaperService(ILogger<CustomerService> logger, IPaperRepository pape
     // This involves creating, updating, and managing the stock status of products.
     public async Task<PaperDto> AddPaper(CreatePaperDto createPaperDto)
     {
+        await createValidator.ValidateAndThrowAsync(createPaperDto);
         var paper = createPaperDto.ToPaper();
         Paper newPaper = await paperRepository.AddPaper(paper);
         return new PaperDto().FromEntity(newPaper, mapper);
@@ -67,6 +72,7 @@ public class PaperService(ILogger<CustomerService> logger, IPaperRepository pape
 
     public async Task UpdatePaper(UpdatePaperDto updatePaperDto)
     {
+        await updateValidator.ValidateAndThrowAsync(updatePaperDto);
         var paper = updatePaperDto.ToPaper();
         try
         {
