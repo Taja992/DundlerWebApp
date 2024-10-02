@@ -1,12 +1,16 @@
-﻿using AutoMapper;
+﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service.TransferModels.DTOs;
 using Service.TransferModels.Requests.Create;
 using Service.TransferModels.Requests.Update;
+using Service.Validators;
+using ValidationException = FluentValidation.ValidationException;
 
 
 namespace Service;
@@ -26,14 +30,20 @@ public interface ICustomerService
 // As a customer I want to be able to see my own order history.
 // This involves retrieving the order history for a specific customer.
 
-public class CustomerService(DunderMifflinContext context, ILogger<CustomerService> logger, ICustomerRepository customerRepository, IMapper mapper) : ICustomerService
+public class CustomerService(DunderMifflinContext context,
+    ILogger<CustomerService> logger,
+    ICustomerRepository customerRepository,
+    IMapper mapper,
+    IValidator<CreateCustomerDto> createValidator,
+    IValidator<UpdateCustomerDto> updateValidator) : ICustomerService
 {
     
 
     public async Task<CustomerDto> AddCustomer(CreateCustomerDto createCustomerDto)
     {
         logger.LogInformation("Added Customer");
-        //Add validation for createCustomerDto
+        //Add validation for createCustomerDto that we never use :p
+        await createValidator.ValidateAndThrowAsync(createCustomerDto);
         var customer = createCustomerDto.ToCustomer();
         Customer newCustomer = await customerRepository.AddCustomer(customer);
         return new CustomerDto().FromEntity(newCustomer, mapper);
@@ -90,6 +100,7 @@ public class CustomerService(DunderMifflinContext context, ILogger<CustomerServi
 
     public async Task UpdateCustomer(UpdateCustomerDto updateCustomerDto)
     {
+        await updateValidator.ValidateAndThrowAsync(updateCustomerDto);
         logger.LogInformation("Updating Customer");
         if (!CustomerExists(updateCustomerDto.Id))
         {

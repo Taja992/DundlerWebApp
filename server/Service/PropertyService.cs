@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DataAccess.Interfaces;
 using DataAccess.Models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service.TransferModels.DTOs;
@@ -21,13 +22,17 @@ public interface IPropertyService
     Task DeleteProperty(int id);
 }
 
-public class PropertyService(ILogger<CustomerService> logger, IPropertyRepository propertyRepository, IMapper mapper) : IPropertyService
+public class PropertyService(ILogger<CustomerService> logger,
+    IPropertyRepository propertyRepository,
+    IMapper mapper,
+    IValidator<CreatePropertyDto> createValidator) : IPropertyService
 {
     // As a business admin I want to be able to create custom properties for paper products (water-resistant, study, etc).
     // This involves creating and managing custom properties for products.
     
     public async Task<PropertyDto> AddProperty(CreatePropertyDto createPropertyDto)
     {
+        await createValidator.ValidateAndThrowAsync(createPropertyDto);
         var property = createPropertyDto.ToProperty();
         Property newProperty = await propertyRepository.AddProperty(property);
         return new PropertyDto().FromEntity(newProperty, mapper);

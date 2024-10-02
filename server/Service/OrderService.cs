@@ -2,6 +2,7 @@
 using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service.TransferModels.DTOs;
@@ -23,7 +24,11 @@ public interface IOrderService
     Task DeleteOrder(int id);
 }
 
-public class OrderService(DunderMifflinContext context, ILogger<CustomerService> logger, IOrderRepository orderRepository, IMapper mapper) : IOrderService
+public class OrderService(DunderMifflinContext context, ILogger<CustomerService> logger,
+    IOrderRepository orderRepository, 
+    IMapper mapper, 
+    IValidator<CreateOrderDto> createValidator, 
+    IValidator<UpdateOrderDto> updateValidator) : IOrderService
 {
     //     As a customer I want to be able to place an order with X order entries of products.
     //     This involves creating a new order with multiple order entries.
@@ -35,7 +40,10 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
     //     This involves updating the status of an existing order.
     public async Task<OrderDto> CreateOrder(CreateOrderDto createOrderDto)
     {
+        await createValidator.ValidateAndThrowAsync(createOrderDto);
         var order = createOrderDto.ToOrder();
+        order.Status = "Pending"; // Force newly created orders to be Pending
+        order.TotalAmount = 0; //set this to 0 at first to avoid null
         Order newOrder = await orderRepository.CreateOrder(order);
         return new OrderDto().FromEntity(newOrder, mapper);
     }
@@ -69,6 +77,7 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
 
     public async Task UpdateOrder(UpdateOrderDto updateOrderDto)
     {
+        await updateValidator.ValidateAndThrowAsync(updateOrderDto);
         var order = updateOrderDto.ToOrder();
         try
         {
