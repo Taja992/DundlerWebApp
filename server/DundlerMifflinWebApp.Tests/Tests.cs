@@ -24,18 +24,18 @@ namespace DundlerMifflinWebApp.Tests
             var createCustomerDto = new CreateCustomerDto()
             {
                 Name = "Lets Test",
-                Address = "Lets Test",
-                Phone = "Lets Test",
-                Email = "Lets Test"
+                Address = "123 Test St",
+                Phone = "+1234567890",
+                Email = "test@letstest.com"
             };
 
             var customerDto = new CustomerDto()
             {
                 Id = 1,
                 Name = "Lets Test",
-                Address = "Lets Test",
-                Phone = "Lets Test",
-                Email = "Lets Test"
+                Address = "123 Test St",
+                Phone = "+1234567890",
+                Email = "test@example.com"
             };
 
             _factory.MockCustomerService.Setup(service => service.AddCustomer(It.IsAny<CreateCustomerDto>()))
@@ -51,9 +51,9 @@ namespace DundlerMifflinWebApp.Tests
             var createdCustomer = await response.Content.ReadFromJsonAsync<CustomerDto>();
             Assert.NotNull(createdCustomer);
             Assert.Equal("Lets Test", createdCustomer.Name);
-            Assert.Equal("Lets Test", createdCustomer.Email);
-            Assert.Equal("Lets Test", createdCustomer.Address);
-            Assert.Equal("Lets Test", createdCustomer.Phone);
+            Assert.Equal("test@example.com", createdCustomer.Email);
+            Assert.Equal("123 Test St", createdCustomer.Address);
+            Assert.Equal("+1234567890", createdCustomer.Phone);
         }
     }
 }

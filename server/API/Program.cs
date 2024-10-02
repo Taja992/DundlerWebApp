@@ -2,9 +2,12 @@ using System.Text.Json.Serialization;
 using DataAccess;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.TransferModels;
+using Service.TransferModels.Requests.Create;
+using Service.TransferModels.Requests.Update;
 
 namespace API;
 
@@ -47,6 +50,17 @@ public class Program
         builder.Services.AddScoped<IOrderService, OrderService>();
         builder.Services.AddScoped<IPaperService, PaperService>();
         builder.Services.AddScoped<IPropertyService, PropertyService>();
+        
+        // Register FluentValidation validators
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateCustomerDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateOrderDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<CreatePaperDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdatePaperDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<CreatePropertyDto>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdatePropertyDto>();
+
 
         // Configure CORS
         builder.Services.AddCors(options =>
