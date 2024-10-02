@@ -80,12 +80,10 @@ POST http://localhost:5193/paper
 Content-Type: application/json
 
 {
-  "name": "Some Special Paper4",
+  "name": "Some Special Paper4444",
   "discontinued": false,
   "stock": 100,
-  "price": 5.99,
-  "orderEntries": [],
-  "properties": []
+  "price": 5.99
 }
 
 ### Get All Papers

@@ -50,6 +50,7 @@ export const newPropertyAtom = atom<Property>({
     propertyName: '',
     papers: []
 });
+export const propertyNameAtom = atom<string>('');
 
 // UI State Atoms
 export const isBoxVisibleAtom = atom<boolean>(false);
