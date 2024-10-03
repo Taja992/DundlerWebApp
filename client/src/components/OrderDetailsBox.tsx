@@ -19,7 +19,7 @@ const OrderDetailsBox: React.FC<OrderDetailsBoxProps> = ({
                                                              setQuantity,
                                                              setSelectedPaperId,
                                                              handleCreateEntry,
-                                                             handleCloseBox
+                                                             handleCloseBox,
                                                          }) => {
 
     const stopPropagation = (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -30,9 +30,9 @@ const OrderDetailsBox: React.FC<OrderDetailsBoxProps> = ({
             <div className="fixed inset-0 flex items-center justify-center bg-opacity-50">
                 <div className="bg-black p-4 rounded shadow-lg">
                     <h2 className="text-xl font-semibold">Order Details</h2>
-                    <p>Order ID: {selectedOrder.id}</p>
-                    <p>Status: {selectedOrder.status}</p>
-                    <p>Total Amount: {selectedOrder.totalAmount}</p>
+                            <p>Order ID: {selectedOrder.id}</p>
+                            <p>Status: {selectedOrder.status}</p>
+                            <p>Total Amount: {selectedOrder.totalAmount}</p>
                     <label className="block text-sm text-gray-500 mt-4">Select Paper:</label>
                     <select
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"

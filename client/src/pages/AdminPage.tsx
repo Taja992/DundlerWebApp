@@ -11,8 +11,8 @@ import {fetchPapers, updatePaper} from "../services/PaperService.ts";
 import {fetchAllOrders, updateOrder} from '../services/OrderService';
 import {ordersAtom} from '../atoms/Atoms';
 import {Paper} from "../services/Api.ts";
-import AddPropertyForm from "../components/AddPropertyForm";
-import AddPaperForm from "../components/AddPaperForm.tsx";
+import CreatePropertyForm from "../components/CreatePropertyForm.tsx";
+import CreatePaperForm from "../components/CreatePaperForm.tsx";
 import PaperList from "../components/PaperList.tsx";
 import PaperDetailsBox from "../components/PaperDetailsBox.tsx";
 
@@ -98,7 +98,7 @@ const AdminPage: React.FC = () => {
                     handleSelectPaper={handleSelectPaper}
                 />
 
-                <AddPaperForm />
+                <CreatePaperForm />
 
                 {isBoxVisible && selectedPaper && (
                     <PaperDetailsBox
@@ -111,7 +111,7 @@ const AdminPage: React.FC = () => {
                     />
                 )}
 
-                <AddPropertyForm />
+                <CreatePropertyForm />
 
                 <div>
                     <h2 className="text-xl font-semi">Orders:</h2>

@@ -37,3 +37,28 @@ export const fetchCustomer = async (customerId: string): Promise<Customer> => {
             throw error;
         }
     };
+
+
+export const generateRandomCustomer = (): Omit<Customer, 'id'> => {
+    const randomString = (length: number) => Math.random().toString(36).substring(2, 2 + length);
+    return {
+        name: `Customer_${randomString(5)}`,
+        address: `${randomString(3)} Ave`,
+        phone: `${Math.floor(Math.random() * 9000000) + 1000000}`,
+        email: `${randomString(5)}@example.com`,
+    };
+};
+
+export const createCustomer = async (customer: Omit<Customer, 'id'>): Promise<Customer> => {
+    try {
+        const response = await axios.post(`${apiBaseurl}/Customers`, customer, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating customer:', error);
+        throw error;
+    }
+};

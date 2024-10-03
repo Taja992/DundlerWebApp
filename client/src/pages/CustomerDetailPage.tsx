@@ -15,7 +15,7 @@ import {fetchPapers} from "../services/PaperService.ts";
 import {addEntriesToExistingOrder} from "../services/OrderEntryService.ts";
 import {Order} from "../services/Api.ts";
 import CustomerInfo from "../components/CustomerInfo.tsx";
-import CreateOrderForm from "../components/AddOrderForm.tsx";
+import CreateOrderForm from "../components/CreateOrderForm.tsx";
 import OrderDetailsBox from "../components/OrderDetailsBox.tsx";
 import OrderList from "../components/OrdersList.tsx";
 import PaperList from "../components/PaperList.tsx";
@@ -32,6 +32,7 @@ const CustomerDetailPage: React.FC = () => {
     const [isBoxVisible, setIsBoxVisible] = useAtom(isBoxVisibleAtom);
     const [selectedPaperId, setSelectedPaperId] = useAtom(selectedPaperIdAtom);
     const [quantity, setQuantity] = useAtom(quantityAtom);
+    const [isCreateOrderFormVisible, setIsCreateOrderFormVisible] = useState<boolean>(false);
 
     useEffect(() => {
         const loadCustomer = async () => {
@@ -78,7 +79,7 @@ const CustomerDetailPage: React.FC = () => {
             try {
                 await addEntriesToExistingOrder(selectedOrder.id, selectedPaperId, [{ quantity }]);
                 setError(null);
-                handleCloseBox();
+                handleCloseOrderBox();
             } catch {
                 setError('Failed to create order entry');
             }
@@ -92,10 +93,20 @@ const CustomerDetailPage: React.FC = () => {
         setIsBoxVisible(true)
     };
 
-    const handleCloseBox = () => {
+    const handleCloseOrderBox = () => {
         setIsBoxVisible(false);
         setSelectedOrder(null);
     }
+
+    const handleStartNewOrder = () => {
+        setIsBoxVisible(false);
+        setIsCreateOrderFormVisible(true);
+        setSelectedOrder(null);
+    };
+
+    const handleCloseCreateOrderBox = () => {
+        setIsCreateOrderFormVisible(false);
+    };
 
 
     if (loading) {
@@ -111,15 +122,17 @@ const CustomerDetailPage: React.FC = () => {
             <div className="flex flex-col items-center">
                 <h1>Customer Page</h1>
                 <div className="flex gap-20">
-                    <CustomerInfo customer={customer} />
+                    <CustomerInfo customer={customer}/>
+                    <div className="flex flex-col items-center space-y-4">
+                        <OrderList
+                            orders={orders}
+                            selectedOrder={selectedOrder}
+                            handleSelectOrder={handleSelectOrder}
+                        />
 
-                    <OrderList
-                        orders={orders}
-                        selectedOrder={selectedOrder}
-                        handleSelectOrder={handleSelectOrder}
-                    />
+                        <button onClick={handleStartNewOrder} className="">Start New Order</button>
 
-
+                    </div>
                     {isBoxVisible && selectedOrder && (
                         <OrderDetailsBox
                             selectedOrder={selectedOrder}
@@ -128,21 +141,23 @@ const CustomerDetailPage: React.FC = () => {
                             setQuantity={setQuantity}
                             setSelectedPaperId={setSelectedPaperId}
                             handleCreateEntry={handleCreateEntry}
-                            handleCloseBox={handleCloseBox}
+                            handleCloseBox={handleCloseOrderBox}
                         />
                     )}
 
-                    {id &&(
-                    <CreateOrderForm
-                        newOrder={newOrder}
-                        setNewOrder={setNewOrder}
-                        customerId={parseInt(id)}
-                        setOrders={setOrders}
-                        orders={orders}
-                    />
+                    {isCreateOrderFormVisible && id && (
+                        <CreateOrderForm
+                            newOrder={newOrder}
+                            setNewOrder={setNewOrder}
+                            customerId={parseInt(id)}
+                            setOrders={setOrders}
+                            orders={orders}
+                            papers={papers}
+                            handleCloseBox={handleCloseCreateOrderBox}
+                        />
                     )}
 
-                    <PaperList papers={papers} />
+                    <PaperList papers={papers}/>
                 </div>
             </div>
         </>

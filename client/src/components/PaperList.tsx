@@ -13,6 +13,7 @@ const PaperList: React.FC<PaperListProps> = ({ papers, selectedPaper, handleSele
         <>
             <div>
                 <h2 className="text-xl font-semi">Available Paper:</h2>
+
                 <div className="max-h-64 overflow-y-auto overflow-x-hidden border border-gray-300 rounded-md p-2 pr-6">
                     <ul>
                         {papers?.map(paper => (
@@ -20,10 +21,16 @@ const PaperList: React.FC<PaperListProps> = ({ papers, selectedPaper, handleSele
                                 className={`cursor-pointer ${selectedPaper?.id === paper.id ? 'bg-gray-700' : ''}`}
                                 onClick={() => handleSelectPaper && handleSelectPaper(paper)}>
                                 <div className="flex justify-between whitespace-nowrap">
-                                    <span className={paper.discontinued ? 'text-red-900' : ''}>Paper: {paper.name} | Availability: {paper.stock} </span>
+                                    <span className={`flex-1 ${paper.discontinued ? 'text-red-900' : ''}`}>{paper.name}</span>
+                                    {paper.stock !== undefined && (
+                                        <span className={`${paper.stock > 15 ? 'text-green-500' : paper.stock >= 3 ? 'text-yellow-200' : 'text-red-500'}`}><span className='flex-none text-right'> Availability: </span>
+                                        <span className="text-right">{paper.stock}</span>
+                                    </span>
+                                    )}
                                 </div>
+
                                 {Array.isArray(paper.properties) && (
-                                    <ul className="ml-4">
+                                    <ul className="ml-4 text-sm">
                                         {paper.properties.map((property, index) => (
                                             <li key={index}>{String(property)}{"<--Broken properties 👍"}</li>
                                         ))}

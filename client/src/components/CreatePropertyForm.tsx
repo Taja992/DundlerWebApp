@@ -3,7 +3,7 @@ import {newPropertyAtom, propertyNameAtom} from "../atoms/Atoms";
 import { createProperty } from "../services/PropertyService";
 import React from "react";
 
-const AddPropertyForm: React.FC = () => {
+const CreatePropertyForm: React.FC = () => {
     const [newProperty, setNewProperty] = useAtom(newPropertyAtom);
     const [propertyName, setPropertyName] = useAtom(propertyNameAtom);
 
@@ -36,4 +36,4 @@ const AddPropertyForm: React.FC = () => {
     );
 };
 
-export default AddPropertyForm;
+export default CreatePropertyForm;

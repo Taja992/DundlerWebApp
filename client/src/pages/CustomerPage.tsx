@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import {customersAtom} from '../atoms/Atoms';
-import { fetchCustomers } from '../services/CustomerService.ts';
-import {Link} from "react-router-dom";
+import {fetchCustomers} from '../services/CustomerService.ts';
+import CreateCustomerButton from "../components/CreateCustomerButton.tsx";
+import CustomerList from "../components/CustomerList.tsx";
+
 
 const CustomerPage: React.FC = () => {
 
@@ -28,9 +30,6 @@ const CustomerPage: React.FC = () => {
     }, [setCustomers]);
 
 
-
-
-
     if (customersError) {
         return <div>Error: {customersError}</div>;
     }
@@ -40,15 +39,14 @@ const CustomerPage: React.FC = () => {
     }
 
     return (
-        <div>
-
-            <h1>Customers:</h1>
-            <ul>                {customers.map(customer => (
-                <li key={customer.id}>
-                    <Link to={`/customer/${customer.id}`}>{customer.name}</Link>
-                </li>))}
-            </ul>
-        </div>
+        <>
+            <div className='flex items-center justify-center min-h-screen'>
+                <div className="text-center">
+            <CustomerList customers={customers}/>
+            <CreateCustomerButton />
+                </div>
+            </div>
+        </>
     );
 };
 

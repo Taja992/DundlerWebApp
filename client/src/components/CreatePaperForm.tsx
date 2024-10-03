@@ -3,7 +3,7 @@ import {newPaperAtom, paperAtom} from "../atoms/Atoms.ts";
 import {createPaper, fetchPapers} from "../services/PaperService.ts";
 
 
-const AddPaperForm: React.FC = () => {
+const CreatePaperForm: React.FC = () => {
     const[newPaper, setNewPaper] = useAtom(newPaperAtom);
     const[ , setPapers] = useAtom(paperAtom);
 
@@ -70,5 +70,5 @@ const AddPaperForm: React.FC = () => {
     );
 };
 
-export default AddPaperForm;
+export default CreatePaperForm;
 
