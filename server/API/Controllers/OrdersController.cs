@@ -86,5 +86,12 @@ public class OrdersController(IOrderService service) : ControllerBase
             return NotFound();
         }
     }
+
+    [HttpPost("CreateWithEntries")]
+    public async Task<ActionResult<OrderDto>> CreateOrderWithEntries( [FromBody] CreateOrderWithEntriesDto createOrderWithEntriesDto )
+    {
+        var createdOrder = await service.CreateOrderWithEntries(createOrderWithEntriesDto);
+        return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
+    }
     
 }

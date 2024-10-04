@@ -5,7 +5,7 @@ import {
     isBoxVisibleAtom,
     paperAtom,
     quantityAtom,
-    selectedPaperAtom
+    selectedPaperAtom, totalPriceAtom
 } from "../atoms/Atoms.ts";
 import {fetchPapers, updatePaper} from "../services/PaperService.ts";
 import {fetchAllOrders, updateOrder} from '../services/OrderService';
@@ -25,6 +25,7 @@ const AdminPage: React.FC = () => {
     const [selectedPaper, setSelectedPaper] = useAtom(selectedPaperAtom);
     const [isBoxVisible, setIsBoxVisible] = useAtom(isBoxVisibleAtom);
     const [quantity, setQuantity] = useAtom(quantityAtom);
+    const [price, setPrice] = useAtom(totalPriceAtom);
 
 
 
@@ -65,7 +66,7 @@ const AdminPage: React.FC = () => {
     const handleUpdatePaper = async () => {
         try {
             if (selectedPaper) {
-                const updatedPaper = {...selectedPaper, stock: quantity};
+                const updatedPaper = {...selectedPaper, stock: quantity, price: price};
                 await updatePaper(updatedPaper)
                 handleCloseBox();
                 const fetchedPapers = await fetchPapers();
@@ -105,6 +106,8 @@ const AdminPage: React.FC = () => {
                         selectedPaper={selectedPaper}
                         quantity={quantity}
                         setQuantity={setQuantity}
+                        price={price}
+                        setPrice={setPrice}
                         handleUpdatePaper={handleUpdatePaper}
                         handleCloseBox={handleCloseBox}
                         setSelectedPaper={setSelectedPaper}

@@ -1,7 +1,8 @@
 ﻿using DataAccess.Models;
+using System;
 
-namespace Service.TransferModels.Requests.Create;
-
+namespace Service.TransferModels.Requests.Create
+{
     public class CreateOrderEntryDto
     {
         public int Quantity { get; set; }
@@ -18,3 +19,4 @@ namespace Service.TransferModels.Requests.Create;
             };
         }
     }
+}

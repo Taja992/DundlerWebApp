@@ -28,6 +28,28 @@ export interface CreateOrderDto {
   customerId?: number | null;
 }
 
+export interface CreateOrderEntryDto {
+  /** @format int32 */
+  quantity?: number;
+  /** @format int32 */
+  productId?: number | null;
+  /** @format int32 */
+  orderId?: number | null;
+}
+
+export interface CreateOrderWithEntriesDto {
+  /** @format date-time */
+  orderDate?: string;
+  /** @format date */
+  deliveryDate?: string | null;
+  status?: string | null;
+  /** @format double */
+  totalAmount?: number;
+  /** @format int32 */
+  customerId?: number | null;
+  orderEntries?: CreateOrderEntryDto[] | null;
+}
+
 export interface CreatePaperDto {
   name?: string | null;
   discontinued?: boolean;
@@ -645,6 +667,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<OrderDto[], any>({
         path: `/Orders/Customer/${customerId}`,
         method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name CreateWithEntriesCreate
+     * @request POST:/Orders/CreateWithEntries
+     */
+    createWithEntriesCreate: (data: CreateOrderWithEntriesDto, params: RequestParams = {}) =>
+      this.request<OrderDto, any>({
+        path: `/Orders/CreateWithEntries`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
