@@ -60,7 +60,7 @@ public class Program
         builder.Services.AddValidatorsFromAssemblyContaining<UpdatePaperDto>();
         builder.Services.AddValidatorsFromAssemblyContaining<CreatePropertyDto>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdatePropertyDto>();
-
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderEntryDto>();
 
         // Configure CORS
         builder.Services.AddCors(options =>

@@ -1,8 +1,11 @@
 // src/services/OrderService.ts
 import axios from 'axios';
-import { Order } from './Api';
+import {Api, Order} from './Api';
+
 
 const apiBaseUrl = 'http://localhost:5193';
+
+const api = new Api({ baseURL: apiBaseUrl });
 
 export const fetchAllOrders = async (): Promise<Order[]> => {
     try {
@@ -21,6 +24,12 @@ export const fetchAllOrders = async (): Promise<Order[]> => {
         throw error;
     }
 };
+
+ export function CreateOrderAlternative() {
+     api.customers.customersCreate({})
+
+ }
+
 
 export const fetchOrder = async (orderId: string): Promise<Order> => {
     try {

@@ -4,6 +4,7 @@ import {fetchCustomer} from '../services/CustomerService.ts';
 import {fetchCustomerOrders} from "../services/OrderService.ts";
 import {useAtom} from "jotai";
 import {
+    checkedPapersAtom,
     createOrderAtom,
     isBoxVisibleAtom,
     ordersAtom,
@@ -26,13 +27,14 @@ const CustomerDetailPage: React.FC = () => {
     const [orders, setOrders] = useAtom(ordersAtom);
     const [, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [newOrder, setNewOrder] = useAtom(createOrderAtom);
+    const [, setNewOrder] = useAtom(createOrderAtom);
     const[papers, setPapers] = useAtom(paperAtom);
     const [selectedOrder, setSelectedOrder] = useAtom(selectedOrderAtom);
     const [isBoxVisible, setIsBoxVisible] = useAtom(isBoxVisibleAtom);
     const [selectedPaperId, setSelectedPaperId] = useAtom(selectedPaperIdAtom);
     const [quantity, setQuantity] = useAtom(quantityAtom);
     const [isCreateOrderFormVisible, setIsCreateOrderFormVisible] = useState<boolean>(false);
+    const [checkedPapers,] = useAtom(checkedPapersAtom)
 
     useEffect(() => {
         const loadCustomer = async () => {
@@ -109,6 +111,7 @@ const CustomerDetailPage: React.FC = () => {
     };
 
 
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -147,17 +150,19 @@ const CustomerDetailPage: React.FC = () => {
 
                     {isCreateOrderFormVisible && id && (
                         <CreateOrderForm
-                            newOrder={newOrder}
-                            setNewOrder={setNewOrder}
                             customerId={parseInt(id)}
-                            setOrders={setOrders}
-                            orders={orders}
                             papers={papers}
                             handleCloseBox={handleCloseCreateOrderBox}
                         />
                     )}
 
-                    <PaperList papers={papers}/>
+                    <PaperList
+                        papers={papers}
+                        showCheckboxes={false}
+                        checkedPapers={checkedPapers}
+
+                    />
+
                 </div>
             </div>
         </>

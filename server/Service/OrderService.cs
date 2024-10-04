@@ -22,6 +22,7 @@ public interface IOrderService
     Task<IEnumerable<OrderDto>> GetOrdersByCustomerId(int customerId);
     Task UpdateOrder(UpdateOrderDto updateOrderDto);
     Task DeleteOrder(int id);
+    Task<OrderDto> CreateOrderWithEntries(CreateOrderWithEntriesDto createOrderWithEntriesDto);
 }
 
 public class OrderService(DunderMifflinContext context, ILogger<CustomerService> logger,
@@ -112,6 +113,13 @@ public class OrderService(DunderMifflinContext context, ILogger<CustomerService>
         }
 
         await orderRepository.DeleteOrder(id);
+    }
+
+    public async Task<OrderDto> CreateOrderWithEntries(CreateOrderWithEntriesDto createOrderWithEntriesDto)
+    {
+        var order = mapper.Map<Order>(createOrderWithEntriesDto);
+        await orderRepository.AddOrderWithEntries(order);
+        return mapper.Map<OrderDto>(order);
     }
 }
 

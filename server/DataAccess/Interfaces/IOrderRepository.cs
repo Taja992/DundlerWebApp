@@ -10,6 +10,7 @@ public interface IOrderRepository
     Task<IEnumerable<Order>> GetOrdersByCustomerId(int customerId);
     Task UpdateOrder(Order order);
     Task DeleteOrder(int id);
+    Task AddOrderWithEntries(Order order);
 
 }
 

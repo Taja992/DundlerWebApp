@@ -25,9 +25,19 @@ export const createOrderAtom = atom<Order>({
 })
 
 
+
 // OrderEntryAtoms
 export const orderEntriesAtom = atom<OrderEntry[]>([]);
 export const selectedOrderEntryAtom = atom<OrderEntry | null>(null);
+export const newOrderAtom = atom<Order>({
+    orderDate: new Date().toISOString(),
+    deliveryDate: null,
+    status: 'Pending',
+    totalAmount: 0,
+    customerId: null,
+    orderEntries: []
+});
+
 
 // Paper Atoms
 export const paperAtom = atom<Paper[]>([]);
@@ -41,6 +51,8 @@ export const newPaperAtom = atom<Paper>({
     orderEntries: [],
     properties: []
 });
+export const totalPriceAtom = atom<number>(0)
+export const quantityAtom = atom<number>(0);
 
 // Property Atoms
 export const propertiesAtom = atom<Property[]>([]);
@@ -55,6 +67,8 @@ export const propertyNameAtom = atom<string>('');
 // UI State Atoms
 export const isBoxVisibleAtom = atom<boolean>(false);
 export const selectedPaperIdAtom = atom<number | null>(null);
-export const quantityAtom = atom<number>(0);
+export const checkedPapersAtom = atom<{ [key: number]: { checked: boolean; quantity: number } }>({});
+export const searchAtom = atom<string>("");
+
 
 

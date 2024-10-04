@@ -1,6 +1,7 @@
 import {useAtom} from "jotai";
 import {newPaperAtom, paperAtom} from "../atoms/Atoms.ts";
 import {createPaper, fetchPapers} from "../services/PaperService.ts";
+import React from "react";
 
 
 const CreatePaperForm: React.FC = () => {

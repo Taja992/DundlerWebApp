@@ -142,28 +142,27 @@ Content-Type: application/json
   "deliveryDate": null,
   "status": "Pending",
   "totalAmount": 100.0,
-  "customerId": 4,
-  "orderEntry": 
+  "customerId": 4
 }
 
 ### Create an Order with order entity
-POST http://localhost:5193/orders
+POST http://localhost:5193/orders/CreateWithEntries
 Content-Type: application/json
 
 {
   "orderDate": "2023-10-01T12:00:00Z",
   "deliveryDate": "2023-10-05",
-  "status": "pending",
+  "status": "Pending",
   "totalAmount": 100.0,
-  "customerId": 1,
+  "customerId": 17,
   "orderEntries": [
     {
-      "quantity": 10,
-      "productId": 1
+      "quantity": 5,
+      "productId": 5
     },
     {
-      "quantity": 5,
-      "productId": 2
+      "quantity": 9,
+      "productId": 24
     }
   ]
 }
