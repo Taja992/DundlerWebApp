@@ -63,6 +63,7 @@ export const newPropertyAtom = atom<Property>({
     papers: []
 });
 export const propertyNameAtom = atom<string>('');
+export const checkedPropertiesAtom = atom<{ [key: number]: {checked: boolean} }>({})
 
 // UI State Atoms
 export const isBoxVisibleAtom = atom<boolean>(false);

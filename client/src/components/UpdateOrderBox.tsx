@@ -12,7 +12,7 @@ interface OrderDetailsBoxProps {
     handleCloseBox: () => void;
 }
 
-const OrderDetailsBox: React.FC<OrderDetailsBoxProps> = ({
+const UpdateOrderBox: React.FC<OrderDetailsBoxProps> = ({
                                                              selectedOrder,
                                                              papers,
                                                              quantity,
@@ -29,7 +29,7 @@ const OrderDetailsBox: React.FC<OrderDetailsBoxProps> = ({
         <Draggable>
             <div className="fixed inset-0 flex items-center justify-center bg-opacity-50">
                 <div className="bg-black p-4 rounded shadow-lg">
-                    <h2 className="text-xl font-semibold">Order Details</h2>
+                    <h2 className="text-xl font-semibold">Add Paper to:</h2>
                             <p>Order ID: {selectedOrder.id}</p>
                             <p>Status: {selectedOrder.status}</p>
                             <p>Total Amount: {selectedOrder.totalAmount}</p>
@@ -61,7 +61,7 @@ const OrderDetailsBox: React.FC<OrderDetailsBoxProps> = ({
                             className="rounded-md focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         />
                     </div>
-                    <button className="m-2" onClick={handleCreateEntry}>Create Entry</button>
+                    <button className="m-2" onClick={handleCreateEntry}>Add Paper</button>
                     <button className="m-2" onClick={handleCloseBox}>Close</button>
                 </div>
             </div>
@@ -69,4 +69,4 @@ const OrderDetailsBox: React.FC<OrderDetailsBoxProps> = ({
     );
 };
 
-export default OrderDetailsBox;
+export default UpdateOrderBox;

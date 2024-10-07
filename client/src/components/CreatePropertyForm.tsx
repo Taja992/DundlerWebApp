@@ -1,17 +1,24 @@
-import { useAtom } from "jotai";
-import {newPropertyAtom, propertyNameAtom} from "../atoms/Atoms";
+
 import { createProperty } from "../services/PropertyService";
 import React from "react";
+import {Property} from "../services/Api.ts";
 
-const CreatePropertyForm: React.FC = () => {
-    const [newProperty, setNewProperty] = useAtom(newPropertyAtom);
-    const [propertyName, setPropertyName] = useAtom(propertyNameAtom);
+interface CreatePropertyFormProps {
+    propertyName: string;
+    setPropertyName: (name: string) => void;
+    properties: Property[];
+    setProperties: (properties: Property[]) => void;
+}
+
+const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ propertyName, setPropertyName, properties, setProperties }) => {
+
+
 
     const handleCreateProperty = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await createProperty({ propertyName });
-            setNewProperty({ ...newProperty, propertyName: "" });
+            const newProperty = await createProperty({ propertyName });
+            setProperties([...properties, newProperty]);
             setPropertyName("");
         } catch (error) {
             console.error('Error creating property:', error);

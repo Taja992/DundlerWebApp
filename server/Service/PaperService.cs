@@ -25,7 +25,8 @@ public interface IPaperService
 
 
 public class PaperService(ILogger<CustomerService> logger, 
-    IPaperRepository paperRepository, 
+    IPaperRepository paperRepository,
+    IPropertyRepository propertyRepository,
     IMapper mapper, IValidator<CreatePaperDto> createValidator,
     IValidator<UpdatePaperDto> updateValidator) : IPaperService
 {
@@ -73,10 +74,12 @@ public class PaperService(ILogger<CustomerService> logger,
     public async Task UpdatePaper(UpdatePaperDto updatePaperDto)
     {
         await updateValidator.ValidateAndThrowAsync(updatePaperDto);
-        var paper = updatePaperDto.ToPaper();
+
+        var properties = await propertyRepository.GetPropertiesByIds(updatePaperDto.PropertyIds);
+        var paper = updatePaperDto.ToPaper(properties);
         try
         {
-            await paperRepository.UpdatePaper(paper);
+            await paperRepository.UpdatePaper(paper, updatePaperDto.PropertyIds);
         }
         catch (DbUpdateConcurrencyException)
         {

@@ -11,7 +11,7 @@ namespace Service.TransferModels.Requests.Update;
         public double Price { get; set; }
         public List<int> PropertyIds { get; set; } = new();
 
-        public Paper ToPaper()
+        public Paper ToPaper(IEnumerable<Property> properties)
         {
             return new Paper
             {
@@ -19,7 +19,8 @@ namespace Service.TransferModels.Requests.Update;
                 Name = Name,
                 Discontinued = Discontinued,
                 Stock = Stock,
-                Price = Price
+                Price = Price,
+                Properties = properties.ToList()
             };
         }
     }

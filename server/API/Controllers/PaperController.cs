@@ -53,8 +53,6 @@ public class PaperController(IPaperService service) : ControllerBase
     }
     
     
-    // TODO: This can't update a papers properties, needs to be fixed/implemented
-    
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdatePaper(int id, [FromBody] UpdatePaperDto updatePaperDto)
     {

@@ -12,20 +12,35 @@ namespace DundlerMifflinWebApp.Tests;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     public Mock<ICustomerService> MockCustomerService { get; } = new();
+    public Mock<IOrderService> MockOrderService { get; } = new();
+    public Mock<IPaperService> MockPaperService { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
-            // Remove the existing service registration
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ICustomerService));
-            if (descriptor != null)
+            var customerServiceDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ICustomerService));
+            if (customerServiceDescriptor != null)
             {
-                services.Remove(descriptor);
+                services.Remove(customerServiceDescriptor);
+            }
+
+            var orderServiceDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IOrderService));
+            if (orderServiceDescriptor != null)
+            {
+                services.Remove(orderServiceDescriptor);
+            }
+
+            var paperServiceDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IPaperService));
+            if (paperServiceDescriptor != null)
+            {
+                services.Remove(paperServiceDescriptor);
             }
 
             // Add the mock service
             services.AddSingleton(MockCustomerService.Object);
+            services.AddSingleton(MockOrderService.Object);
+            services.AddSingleton(MockPaperService.Object);
         });
     }
 }

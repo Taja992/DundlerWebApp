@@ -97,7 +97,6 @@ const PaperList: React.FC<PaperListProps> = ({ papers,
                                             />
                                     )}
 
-
                                     <span className={`flex-1 pl-1 ${paper.discontinued ? 'text-red-900 font-semibold italic' : 'font-semibold'}`}>{paper.name}</span>
                                     <div className='flex flex-col'>
                                     <span>{paper.price},-&nbsp;</span>

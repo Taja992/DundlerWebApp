@@ -1,4 +1,4 @@
-import {Paper} from "./Api.ts";
+import {Paper, UpdatePaperDto} from "./Api.ts";
 import axios from "axios";
 
 
@@ -38,7 +38,7 @@ export const createPaper = async (paper: Paper): Promise<Paper> => {
     }
 }
 
-export const updatePaper = async (paper: Paper): Promise<Paper> => {
+export const updatePaper = async (paper: UpdatePaperDto): Promise<Paper> => {
     try{
         const response = await axios.put(`${apiBaseurl}/paper/${paper.id}`, paper,{
             headers: {
