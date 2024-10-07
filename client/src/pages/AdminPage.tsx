@@ -2,8 +2,9 @@
 import React, {useEffect} from "react";
 import {useAtom} from "jotai";
 import {
+    checkedPropertiesAtom,
     isBoxVisibleAtom,
-    paperAtom,
+    paperAtom, propertiesAtom, propertyNameAtom,
     quantityAtom,
     selectedPaperAtom, totalPriceAtom
 } from "../atoms/Atoms.ts";
@@ -14,7 +15,10 @@ import {Paper} from "../services/Api.ts";
 import CreatePropertyForm from "../components/CreatePropertyForm.tsx";
 import CreatePaperForm from "../components/CreatePaperForm.tsx";
 import PaperList from "../components/PaperList.tsx";
-import PaperDetailsBox from "../components/PaperDetailsBox.tsx";
+import UpdatePaperBox from "../components/UpdatePaperBox.tsx";
+import PropertyList from "../components/PropertyList.tsx";
+import {fetchProperties} from "../services/PropertyService.ts";
+
 
 
 
@@ -26,6 +30,9 @@ const AdminPage: React.FC = () => {
     const [isBoxVisible, setIsBoxVisible] = useAtom(isBoxVisibleAtom);
     const [quantity, setQuantity] = useAtom(quantityAtom);
     const [price, setPrice] = useAtom(totalPriceAtom);
+    const [checkedProperties, ] = useAtom(checkedPropertiesAtom);
+    const [properties, setProperties] = useAtom(propertiesAtom);
+    const [propertyName, setPropertyName] = useAtom(propertyNameAtom);
 
 
 
@@ -47,6 +54,16 @@ const AdminPage: React.FC = () => {
 
     }, [setPapers, setOrders]);
 
+    useEffect( () => {
+        const loadProperties = async () =>{
+            const fetchedProperties = await fetchProperties();
+            setProperties(fetchedProperties);
+        }
+        loadProperties();
+    }, [setProperties]);
+
+
+
 
     const handleUpdateOrder = async (orderId: number, updatedStatus: string) => {
         try {
@@ -63,19 +80,45 @@ const AdminPage: React.FC = () => {
     };
 
 
-    const handleUpdatePaper = async () => {
-        try {
-            if (selectedPaper) {
-                const updatedPaper = {...selectedPaper, stock: quantity, price: price};
-                await updatePaper(updatedPaper)
+    // const handleUpdatePaper = async () => {
+    //     try {
+    //         if (selectedPaper) {
+    //             const updatedPaper = {...selectedPaper, stock: quantity, price: price};
+    //             await updatePaper(updatedPaper)
+    //             handleCloseBox();
+    //             const fetchedPapers = await fetchPapers();
+    //             setPapers(fetchedPapers);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error updating paper', error);
+    //     }
+    // }
+
+    const handleUpdatePaperWithProperties = async () => {
+        if (selectedPaper) {
+            // Get the selected property IDs from the checked properties
+            const selectedPropertyIds = Object.keys(checkedProperties)
+                .filter((key) => checkedProperties[parseInt(key)].checked)
+                .map((key) => parseInt(key));
+
+            // Update the paper with the new properties
+            const updatedPaper = {
+                ...selectedPaper,
+                propertyIds: selectedPropertyIds, // Use the selected properties
+                stock: quantity,
+                price: price,
+            };
+
+            try {
+                await updatePaper(updatedPaper);
                 handleCloseBox();
                 const fetchedPapers = await fetchPapers();
                 setPapers(fetchedPapers);
+            } catch (error) {
+                console.error('Error updating paper', error);
             }
-        } catch (error) {
-            console.error('Error updating paper', error);
         }
-    }
+    };
 
     const handleSelectPaper = (paper: Paper) => {
         setSelectedPaper(paper);
@@ -102,19 +145,30 @@ const AdminPage: React.FC = () => {
                 <CreatePaperForm />
 
                 {isBoxVisible && selectedPaper && (
-                    <PaperDetailsBox
+                    <UpdatePaperBox
                         selectedPaper={selectedPaper}
                         quantity={quantity}
                         setQuantity={setQuantity}
                         price={price}
                         setPrice={setPrice}
-                        handleUpdatePaper={handleUpdatePaper}
+                        handleUpdatePaper={handleUpdatePaperWithProperties}
                         handleCloseBox={handleCloseBox}
                         setSelectedPaper={setSelectedPaper}
                     />
                 )}
+                <div>
+                    <PropertyList
+                        properties={properties}
+                        showCheckBoxes={false}
+                    />
 
-                <CreatePropertyForm />
+                    <CreatePropertyForm
+                        propertyName={propertyName}
+                        setPropertyName={setPropertyName}
+                        properties={properties}
+                        setProperties={setProperties}
+                    />
+                </div>
 
                 <div>
                     <h2 className="text-xl font-semi">Orders:</h2>

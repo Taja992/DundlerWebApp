@@ -17,7 +17,7 @@ import {addEntriesToExistingOrder} from "../services/OrderEntryService.ts";
 import {Order} from "../services/Api.ts";
 import CustomerInfo from "../components/CustomerInfo.tsx";
 import CreateOrderForm from "../components/CreateOrderForm.tsx";
-import OrderDetailsBox from "../components/OrderDetailsBox.tsx";
+import UpdateOrderBox from "../components/UpdateOrderBox.tsx";
 import OrderList from "../components/OrdersList.tsx";
 import PaperList from "../components/PaperList.tsx";
 
@@ -137,7 +137,7 @@ const CustomerDetailPage: React.FC = () => {
 
                     </div>
                     {isBoxVisible && selectedOrder && (
-                        <OrderDetailsBox
+                        <UpdateOrderBox
                             selectedOrder={selectedOrder}
                             papers={papers}
                             quantity={quantity}

@@ -8,7 +8,7 @@ public interface IPaperRepository
     Task<IEnumerable<Paper>> GetAllPaper();
     Task<Paper?> GetPaperById(int id);
     Task<IEnumerable<Paper>> GetPaperByProperty(int propertyId);
-    Task UpdatePaper(Paper paper);
+    Task UpdatePaper(Paper paper, List<int> propertyId);
     Task DeletePaper(int id);
     Task<bool> PaperExists(int id);
 }

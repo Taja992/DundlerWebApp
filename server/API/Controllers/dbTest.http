@@ -96,12 +96,12 @@ GET http://localhost:5193/paper/2
 GET http://localhost:5193/paper/property/2
 
 ### Update Paper
-PUT http://localhost:5193/paper/4
+PUT http://localhost:5193/paper/5
 Content-Type: application/json
 
 {
-  "id": 4,
-  "name": "NSpecial",
+  "id": 5,
+  "name": "Do No more properties",
   "discontinued": false,
   "stock": 150,
   "price": 6.99
@@ -192,3 +192,15 @@ Content-Type: application/json
 ### Delete Order
 DELETE http://localhost:5193/orders/3
 
+### Update Paper
+PUT http://localhost:5193/paper/5
+Content-Type: application/json
+
+{
+  "id": 5,
+  "name": "properties Paper Name",
+  "discontinued": false,
+  "stock": 100,
+  "price": 9.99,
+  "propertyIds": [3]
+}

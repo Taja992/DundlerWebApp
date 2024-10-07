@@ -36,9 +36,50 @@ public class PaperRepository(DunderMifflinContext context) : IPaperRepository
             .ToListAsync();
     }
 
-    public async Task UpdatePaper(Paper paper)
+    public async Task UpdatePaper(Paper paper, List<int> propertyIds)
     {
+        // Update the paper
         context.Entry(paper).State = EntityState.Modified;
+
+        // Clear existing properties in a different method and await till its been done to
+        // ensure its been cleared
+        await ClearPaperProperties(paper.Id);
+
+        // Add new properties
+        if (propertyIds.Count > 0)
+        {
+            var newProperties = await context.Properties
+                .Where(p => propertyIds.Contains(p.Id))
+                .ToListAsync();
+
+            var existingPaper = await context.Papers
+                .Include(p => p.Properties)
+                .SingleOrDefaultAsync(p => p.Id == paper.Id);
+
+            if (existingPaper != null)
+            {
+                foreach (var property in newProperties)
+                {
+                    existingPaper.Properties.Add(property);
+                }
+            }
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    private async Task ClearPaperProperties(int paperId)
+    {
+        var existingPaper = await context.Papers
+            .Include(p => p.Properties)
+            .SingleOrDefaultAsync(p => p.Id == paperId);
+
+        if (existingPaper == null)
+        {
+            throw new KeyNotFoundException($"Paper with ID {paperId} not found.");
+        }
+
+        existingPaper.Properties.Clear();
         await context.SaveChangesAsync();
     }
 

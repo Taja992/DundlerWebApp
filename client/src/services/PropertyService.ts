@@ -1,8 +1,10 @@
-import {Property} from "./Api.ts";
+import {Api, Property, PropertyDto} from "./Api.ts";
 import axios from "axios";
 
 
 const apiBaseUrl = 'http://localhost:5193';
+
+const api = new Api({ baseURL: apiBaseUrl });
 
 export const createProperty = async (newProperty: {propertyName: string}): Promise<Property> => {
 
@@ -16,6 +18,17 @@ export const createProperty = async (newProperty: {propertyName: string}): Promi
             return response.data
     } catch (error) {
         console.error('Error creating order:', error);
+        throw error;
+    }
+}
+
+
+export const fetchProperties = async (): Promise<PropertyDto[]> => {
+    try {
+        const response = await api.properties.propertiesList()
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching properties', error);
         throw error;
     }
 }

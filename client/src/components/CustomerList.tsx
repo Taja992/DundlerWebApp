@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
-import React from "react";
-import {Customer} from "../services/Api.ts";
+import {Customer} from "../services/Api";
+
 
 interface CustomerListProps {
     customers: Customer[];
