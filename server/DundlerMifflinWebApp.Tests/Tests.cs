@@ -8,154 +8,210 @@ using Service.TransferModels.Requests.Create;
 
 namespace DundlerMifflinWebApp.Tests;
 
-    public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
+{
+    private readonly CustomWebApplicationFactory<Program> _factory;
+
+    public Tests(CustomWebApplicationFactory<Program> factory)
     {
-        private readonly CustomWebApplicationFactory<Program> _factory;
+        _factory = factory;
+    }
 
-        public Tests(CustomWebApplicationFactory<Program> factory)
+    [Fact]
+    public async Task TryToAddCustomer()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var createCustomerDto = new CreateCustomerDto()
         {
-            _factory = factory;
-        }
+            Name = "Lets Test",
+            Address = "123 Test St",
+            Phone = "+1234567890",
+            Email = "test@letstest.com"
+        };
 
-        [Fact]
-        public async Task TryToAddCustomer()
+        var customerDto = new CustomerDto()
         {
-            // Arrange
-            var client = _factory.CreateClient();
-            var createCustomerDto = new CreateCustomerDto()
-            {
-                Name = "Lets Test",
-                Address = "123 Test St",
-                Phone = "+1234567890",
-                Email = "test@letstest.com"
-            };
+            Id = 1,
+            Name = "Lets Test",
+            Address = "123 Test St",
+            Phone = "+1234567890",
+            Email = "test@example.com"
+        };
 
-            var customerDto = new CustomerDto()
-            {
-                Id = 1,
-                Name = "Lets Test",
-                Address = "123 Test St",
-                Phone = "+1234567890",
-                Email = "test@example.com"
-            };
+        _factory.MockCustomerService.Setup(service => service.AddCustomer(It.IsAny<CreateCustomerDto>()))
+            .ReturnsAsync(customerDto);
 
-            _factory.MockCustomerService.Setup(service => service.AddCustomer(It.IsAny<CreateCustomerDto>()))
-                .ReturnsAsync(customerDto);
+        // Act
+        var response = await client.PostAsJsonAsync("/Customers", createCustomerDto);
 
-            // Act
-            var response = await client.PostAsJsonAsync("/Customers", createCustomerDto);
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
-
-            var createdCustomer = await response.Content.ReadFromJsonAsync<CustomerDto>();
-            Assert.NotNull(createdCustomer);
-            Assert.Equal("Lets Test", createdCustomer.Name);
-            Assert.Equal("test@example.com", createdCustomer.Email);
-            Assert.Equal("123 Test St", createdCustomer.Address);
-            Assert.Equal("+1234567890", createdCustomer.Phone);
-        }
+        var createdCustomer = await response.Content.ReadFromJsonAsync<CustomerDto>();
+        Assert.NotNull(createdCustomer);
+        Assert.Equal("Lets Test", createdCustomer.Name);
+        Assert.Equal("test@example.com", createdCustomer.Email);
+        Assert.Equal("123 Test St", createdCustomer.Address);
+        Assert.Equal("+1234567890", createdCustomer.Phone);
+    }
         
-        [Fact]
-        public async Task TryToAddOrderWithOrderEntry()
-        {
+    [Fact]
+    public async Task TryToAddOrderWithOrderEntry()
+    {
             
-            // Arrange
-            var client = _factory.CreateClient();
-            var createOrderWithEntriesDto = new CreateOrderWithEntriesDto
+        // Arrange
+        var client = _factory.CreateClient();
+        var createOrderWithEntriesDto = new CreateOrderWithEntriesDto
+        {
+            OrderDate = new DateTime(2023, 10, 1, 12, 0, 0),
+            DeliveryDate = new DateOnly(2023, 10, 5),
+            Status = "Pending",
+            TotalAmount = 100.0,
+            CustomerId = 1,
+            OrderEntries = new List<CreateOrderEntryDto>
             {
-                OrderDate = new DateTime(2023, 10, 1, 12, 0, 0),
-                DeliveryDate = new DateOnly(2023, 10, 5),
-                Status = "Pending",
-                TotalAmount = 100.0,
-                CustomerId = 1,
-                OrderEntries = new List<CreateOrderEntryDto>
-                {
-                    new CreateOrderEntryDto() { Quantity = 5, ProductId = 5},
-                    new CreateOrderEntryDto() { Quantity = 9, ProductId = 24}
-                }
-            };
+                new CreateOrderEntryDto() { Quantity = 5, ProductId = 5},
+                new CreateOrderEntryDto() { Quantity = 9, ProductId = 24}
+            }
+        };
 
-            var orderDto = new OrderDto
+        var orderDto = new OrderDto
+        {
+            Id = 1,
+            OrderDate = DateTime.Parse("2023-10-01T12:00:00Z"),
+            DeliveryDate = DateOnly.FromDateTime(DateTime.Parse("2023-10-05")),
+            Status = "Pending",
+            TotalAmount = 100.0,
+            CustomerId = 1,
+            OrderEntries = new List<OrderEntryDto>
+            {
+                new OrderEntryDto { Quantity = 5, ProductId = 5 },
+                new OrderEntryDto { Quantity = 9, ProductId = 24 }
+            }
+        };
+            
+        _factory.MockOrderService.Setup(service => service.CreateOrderWithEntries(It.IsAny<CreateOrderWithEntriesDto>()))
+            .ReturnsAsync(orderDto);
+            
+        // Act
+        var response = await client.PostAsJsonAsync("Orders/CreateWithEntries", createOrderWithEntriesDto);
+            
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+
+        var createdOrder = await response.Content.ReadFromJsonAsync<OrderDto>();
+        Assert.NotNull(createdOrder);
+        Assert.Equal("Pending", createdOrder.Status);
+        Assert.Equal(100.0, createdOrder.TotalAmount);
+        Assert.Equal(1, createdOrder.CustomerId);
+        // Make sure 2 order entries have been put in
+        Assert.Equal(2, createdOrder.OrderEntries.Count);
+
+    }
+
+
+    [Fact]
+    public async Task TryToCreateNewPaper()
+    {
+            
+        // Arrange
+        var client = _factory.CreateClient();
+        var createPaperDto = new CreatePaperDto
+        {
+            Name = "IAmAPaper",
+            Discontinued = false,
+            Stock = 53,
+            Price = 52
+        };
+
+        var paperDto = new PaperDto()
+        {
+            Id = 1,
+            Name = "IAmAPaper",
+            Discontinued = false,
+            Stock = 53,
+            Price = 52
+        };
+
+        _factory.MockPaperService.Setup(service => service.AddPaper(It.IsAny<CreatePaperDto>()))
+            .ReturnsAsync(paperDto);
+            
+        // Act
+
+        var response = await client.PostAsJsonAsync("/Paper", createPaperDto);
+            
+        // Assert
+
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+
+        var createdPaper = await response.Content.ReadFromJsonAsync<PaperDto>();
+        Assert.NotNull(createdPaper);
+        Assert.Equal("IAmAPaper", createdPaper.Name);
+        Assert.False(createdPaper.Discontinued);
+        Assert.Equal(53, createdPaper.Stock);
+        Assert.Equal(52, createdPaper.Price);
+
+    }
+        
+    [Fact]
+    public async Task GetOrdersByCustomerId_ReturnsOrders()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var customerId = 1;
+
+        var orders = new List<OrderDto>
+        {
+            new OrderDto
             {
                 Id = 1,
-                OrderDate = DateTime.Parse("2023-10-01T12:00:00Z"),
-                DeliveryDate = DateOnly.FromDateTime(DateTime.Parse("2023-10-05")),
+                OrderDate = new DateTime(2023, 10, 1, 12, 0, 0),
+                DeliveryDate = DateOnly.FromDateTime(new DateTime(2023, 10, 5)),
                 Status = "Pending",
                 TotalAmount = 100.0,
-                CustomerId = 1,
+                CustomerId = customerId,
                 OrderEntries = new List<OrderEntryDto>
                 {
                     new OrderEntryDto { Quantity = 5, ProductId = 5 },
                     new OrderEntryDto { Quantity = 9, ProductId = 24 }
                 }
-            };
-            
-            _factory.MockOrderService.Setup(service => service.CreateOrderWithEntries(It.IsAny<CreateOrderWithEntriesDto>()))
-                .ReturnsAsync(orderDto);
-            
-            // Act
-            var response = await client.PostAsJsonAsync("Orders/CreateWithEntries", createOrderWithEntriesDto);
-            
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
-
-            var createdOrder = await response.Content.ReadFromJsonAsync<OrderDto>();
-            Assert.NotNull(createdOrder);
-            Assert.Equal("Pending", createdOrder.Status);
-            Assert.Equal(100.0, createdOrder.TotalAmount);
-            Assert.Equal(1, createdOrder.CustomerId);
-            // Make sure 2 order entries have been put in
-            Assert.Equal(2, createdOrder.OrderEntries.Count);
-
-        }
-
-
-        [Fact]
-        public async Task TryToCreateNewPaper()
-        {
-            
-            // Arrange
-            var client = _factory.CreateClient();
-            var createPaperDto = new CreatePaperDto
+            },
+            new OrderDto
             {
-                Name = "IAmAPaper",
-                Discontinued = false,
-                Stock = 53,
-                Price = 52
-            };
+                Id = 2,
+                OrderDate = new DateTime(2023, 10, 2, 12, 0, 0),
+                DeliveryDate = DateOnly.FromDateTime(new DateTime(2023, 10, 6)),
+                Status = "Pending",
+                TotalAmount = 200.0,
+                CustomerId = customerId,
+                OrderEntries = new List<OrderEntryDto>
+                {
+                    new OrderEntryDto { Quantity = 3, ProductId = 7 },
+                    new OrderEntryDto { Quantity = 4, ProductId = 12 }
+                }
+            }
+        };
 
-            var paperDto = new PaperDto()
-            {
-                Id = 1,
-                Name = "IAmAPaper",
-                Discontinued = false,
-                Stock = 53,
-                Price = 52
-            };
+        _factory.MockOrderService.Setup(service => service.GetOrdersByCustomerId(customerId))
+            .ReturnsAsync(orders);
 
-            _factory.MockPaperService.Setup(service => service.AddPaper(It.IsAny<CreatePaperDto>()))
-                .ReturnsAsync(paperDto);
-            
-            // Act
+        // Act
+        var response = await client.GetAsync($"/Orders/Customer/{customerId}");
 
-            var response = await client.PostAsJsonAsync("/Paper", createPaperDto);
-            
-            // Assert
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
 
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
-
-            var createdPaper = await response.Content.ReadFromJsonAsync<PaperDto>();
-            Assert.NotNull(createdPaper);
-            Assert.Equal("IAmAPaper", createdPaper.Name);
-            Assert.False(createdPaper.Discontinued);
-            Assert.Equal(53, createdPaper.Stock);
-            Assert.Equal(52, createdPaper.Price);
-
-        }
-        
-        
+        var returnedOrders = await response.Content.ReadFromJsonAsync<List<OrderDto>>();
+        Assert.NotNull(returnedOrders);
+        Assert.Equal(2, returnedOrders.Count);
+        Assert.Equal(customerId, returnedOrders[0].CustomerId);
+        Assert.Equal(customerId, returnedOrders[1].CustomerId);
     }
+        
+        
+}

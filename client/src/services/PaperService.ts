@@ -1,8 +1,10 @@
-import {Paper, UpdatePaperDto} from "./Api.ts";
+import {Api, Paper, UpdatePaperDto} from "./Api.ts";
 import axios from "axios";
 
 
 const apiBaseurl = 'http://localhost:5193';
+
+const api = new Api( {baseURL: apiBaseurl});
 
 //fetch all papers(products)
 export const fetchPapers = async (): Promise<Paper[]> => {
@@ -21,6 +23,11 @@ export const fetchPapers = async (): Promise<Paper[]> => {
         console.error('Error fetching papers:', error);
         throw error
     }
+}
+
+export const fetchPapersAlternative = async () => {
+    const response = await api.paper.paperList()
+    return response.data;
 }
 
 export const createPaper = async (paper: Paper): Promise<Paper> => {

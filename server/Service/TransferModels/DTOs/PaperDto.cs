@@ -13,11 +13,14 @@ namespace Service.TransferModels.DTOs;
         public double Price { get; set; }
         public List<OrderEntryDto> OrderEntries { get; set; } = new();
         public List<PropertyDto> Properties { get; set; } = new();
+        public List<string> PropertyNames { get; set; } = new();
         
         
         public PaperDto FromEntity(Paper paper, IMapper mapper)
         {
-            return mapper.Map<PaperDto>(paper);
+            var dto = mapper.Map<PaperDto>(paper);
+            dto.PropertyNames = paper.Properties.Select(p => p.PropertyName).ToList(); // Add this line
+            return dto;
         }
 
         // public PaperDto FromEntity(Paper paper, IMapper mapper)

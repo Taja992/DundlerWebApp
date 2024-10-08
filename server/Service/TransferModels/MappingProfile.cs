@@ -18,7 +18,9 @@ public class MappingProfile : Profile
 
         CreateMap<OrderEntry, OrderEntryDto>();
         
-        CreateMap<Paper, PaperDto>();
+        CreateMap<Paper, PaperDto>()
+            .ForMember(dest => dest.PropertyNames, opt => opt.MapFrom(src => src.Properties.Select(p => p.PropertyName).ToList()));
+        CreateMap<Property, PropertyDto>();
         
         CreateMap<Property, PropertyDto>();
 
