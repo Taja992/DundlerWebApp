@@ -35,3 +35,15 @@ jobs:
 
       - name: Run tests
         run: dotnet test server/DundlerMifflinWebApp.Tests/DundlerMifflinWebApp.Tests.csproj --no-build --verbosity normal
+        
+      - name: Install Dependencies for front-end
+        run: npm install
+        working-directory: client
+        
+      - name: Build front-end
+        run: npm run build
+        working-directory: client
+
+      - name: Run front-end tests
+        run: npm test
+        working-directory: client
