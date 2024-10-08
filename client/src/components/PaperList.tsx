@@ -1,4 +1,4 @@
-import {Paper} from "../services/Api.ts";
+import {PaperDto} from "../services/Api.ts";
 import React, {useState} from "react";
 import {useAtom} from "jotai/index";
 import {searchAtom} from "../atoms/Atoms.ts";
@@ -10,9 +10,9 @@ interface CheckedPaper {
 }
 
 interface PaperListProps {
-    papers: Paper[];
-    selectedPaper?: Paper | null;
-    handleSelectPaper?: (paper: Paper) => void;
+    papers: PaperDto[];
+    selectedPaper?: PaperDto | null;
+    handleSelectPaper?: (paper: PaperDto) => void;
     showCheckboxes?: boolean;
     checkedPapers?: { [key: number]: CheckedPaper };
     handleCheckboxChange?: (paperId: number, checked: boolean) => void;
@@ -124,10 +124,10 @@ const PaperList: React.FC<PaperListProps> = ({ papers,
                                     </div>
                                 )}
 
-                                {Array.isArray(paper.properties) && (
+                                {Array.isArray(paper.propertyNames) && (
                                     <ul className="ml-4 text-sm">
-                                        {paper.properties.map((property, index) => (
-                                            <li key={index}>{String(property)}{"<--Broken properties 👍"}</li>
+                                        {paper.propertyNames.map((propertyName, index) => (
+                                            <li key={index}>{propertyName}</li>
                                         ))}
                                     </ul>
                                 )}

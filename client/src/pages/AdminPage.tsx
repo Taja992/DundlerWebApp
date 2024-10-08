@@ -8,7 +8,7 @@ import {
     quantityAtom,
     selectedPaperAtom, totalPriceAtom
 } from "../atoms/Atoms.ts";
-import {fetchPapers, updatePaper} from "../services/PaperService.ts";
+import {fetchPapers, fetchPapersAlternative, updatePaper} from "../services/PaperService.ts";
 import {fetchAllOrders, updateOrder} from '../services/OrderService';
 import {ordersAtom} from '../atoms/Atoms';
 import {Paper} from "../services/Api.ts";
@@ -41,7 +41,7 @@ const AdminPage: React.FC = () => {
             try {
                 const [fetchedOrders, fetchedPapers] = await Promise.all([
                     fetchAllOrders(),
-                    fetchPapers()
+                    fetchPapersAlternative()
                 ]);
                 setOrders(fetchedOrders);
                 setPapers(fetchedPapers)

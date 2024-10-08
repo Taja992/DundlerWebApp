@@ -165,6 +165,7 @@ export interface PaperDto {
   price?: number;
   orderEntries?: OrderEntryDto[] | null;
   properties?: PropertyDto[] | null;
+  propertyNames?: string[] | null;
 }
 
 export interface Property {
