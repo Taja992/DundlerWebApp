@@ -7,6 +7,8 @@ using DataAccess.Models;
 namespace API.Controllers;
 
 
+// My OrderEntries are my only controller that I ended up not making a repository and service for, for no good reason
+// Everything else uses the proper design pattern, the only one getting used is createOrderEntry
 [ApiController]
 [Route("[controller]")]
 public class OrderEntriesController(DunderMifflinContext context) : ControllerBase

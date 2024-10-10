@@ -126,7 +126,10 @@ public class CustomerService(DunderMifflinContext context,
     {
         return context.Customers.Any(c => c.Id == id);
     }
-
+    
+    
+    // I didnt use my Delete methods since there was no need to delete anything but I still had a question about this..
+    // I have a null check here and in my repository, is that over kill or is it good idea to have them in both places?
     public async Task DeleteCustomer(int id)
     {
         logger.LogInformation("Deleted Customer id:{id}", id);

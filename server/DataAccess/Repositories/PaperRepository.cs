@@ -36,6 +36,13 @@ public class PaperRepository(DunderMifflinContext context) : IPaperRepository
             .ToListAsync();
     }
 
+    
+    // my UpdatePaper got a bit messy once I wanted to make a way to update a paper with properties 
+    // and wanted the property names to show so I ended up clearing the entire list, which I 
+    // cant imagine is very great practice if I had a list of like 100 properties lol, but I couldnt come up with
+    // a better way to do it because of the primary key, whenever I tried to add a new property while leaving
+    // the properties already on it, id run into a duplicate key error and couldnt figure out how to just ignore
+    // duplicate keys
     public async Task UpdatePaper(Paper paper, List<int> propertyIds)
     {
         // Update the paper

@@ -16,8 +16,10 @@ const HomePage: React.FC = () => {
     return (
         <div>
             <h1>Home Page</h1>
+            <div className="space-x-3">
             <button onClick={goToAdminPage}>Admin Page</button>
             <button onClick={goToOrderPage}>Customer Page</button>
+            </div>
         </div>
     );
 };

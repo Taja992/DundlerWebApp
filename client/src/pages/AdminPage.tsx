@@ -8,7 +8,7 @@ import {
     quantityAtom,
     selectedPaperAtom, totalPriceAtom
 } from "../atoms/Atoms.ts";
-import {fetchPapers, fetchPapersAlternative, updatePaper} from "../services/PaperService.ts";
+import {fetchPapersAlternative, updatePaper} from "../services/PaperService.ts";
 import {fetchAllOrders, updateOrder} from '../services/OrderService';
 import {ordersAtom} from '../atoms/Atoms';
 import {Paper} from "../services/Api.ts";
@@ -112,7 +112,7 @@ const AdminPage: React.FC = () => {
             try {
                 await updatePaper(updatedPaper);
                 handleCloseBox();
-                const fetchedPapers = await fetchPapers();
+                const fetchedPapers = await fetchPapersAlternative();
                 setPapers(fetchedPapers);
             } catch (error) {
                 console.error('Error updating paper', error);

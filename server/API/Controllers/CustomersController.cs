@@ -8,7 +8,7 @@ using Service.TransferModels.Requests.Update;
 
 namespace API.Controllers;
 
-
+// I have many unused methods that basically were just ready for implementation but it just didnt happen
 [ApiController]
 [Route("[controller]")]
 public class CustomersController(ICustomerService service) : ControllerBase

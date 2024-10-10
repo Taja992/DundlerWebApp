@@ -6,7 +6,12 @@ const apiBaseurl = 'http://localhost:5193';
 
 const api = new Api( {baseURL: apiBaseurl});
 
-//fetch all papers(products)
+
+
+// Here I implemented both the types of fetch that we talked about in the meeting
+// I use fetchpapers on my CustomerDetail Page and fetchPapersAlternative, I was expecting
+// the axios method to use Paper object and the alternative to use the DTO, however they are both able to give me
+// paper.propertyNames and I don't understand why, I guess because the PaperList uses PaperDto but then, what is the difference between the fetch methods?
 export const fetchPapers = async (): Promise<Paper[]> => {
     try {
         const response = await axios.get(`${apiBaseurl}/paper`, {
@@ -46,8 +51,8 @@ export const createPaper = async (paper: Paper): Promise<Paper> => {
 }
 
 export const updatePaper = async (paper: UpdatePaperDto): Promise<Paper> => {
-    try{
-        const response = await axios.put(`${apiBaseurl}/paper/${paper.id}`, paper,{
+    try {
+        const response = await axios.put(`${apiBaseurl}/paper/${paper.id}`, paper, {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json',

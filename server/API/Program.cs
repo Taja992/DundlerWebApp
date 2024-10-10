@@ -38,6 +38,10 @@ public class Program
             builder.Services.AddDbContext<DunderMifflinContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
         //}
+        
+        //My program.cs got very filled with all these, is there a better way to implement them or do I actually need to
+        //implement them all like this? .. Also did I really need to make it public: public static void Main(string[] args)
+        // I couldnt seem to get my public class Tests : IClassFixture<CustomWebApplicationFactory<Program>> to work until I did that
 
         // Register the repositories
         builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
