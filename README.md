@@ -10,5 +10,3 @@ Ive added a commit called "Notes and questions" where ive added
 notes on areas that I had some questions on, I am not sure
 how you are doing feedback etc but just to hylight my concerns!
 Many controller methods are fully implemented but unused atm
-
-_A project created by Brandon Gibbs aka Taja992_
