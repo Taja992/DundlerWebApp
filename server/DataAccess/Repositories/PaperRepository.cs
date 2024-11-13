@@ -57,29 +57,10 @@ public class PaperRepository(DunderMifflinContext context) : IPaperRepository
                 .SingleOrDefaultAsync(p => p.Id == paper.Id);
 
             if (existingPaper != null)
-            {
                 foreach (var property in newProperties)
-                {
                     existingPaper.Properties.Add(property);
-                }
-            }
         }
 
-        await context.SaveChangesAsync();
-    }
-
-    private async Task ClearPaperProperties(int paperId)
-    {
-        var existingPaper = await context.Papers
-            .Include(p => p.Properties)
-            .SingleOrDefaultAsync(p => p.Id == paperId);
-
-        if (existingPaper == null)
-        {
-            throw new KeyNotFoundException($"Paper with ID {paperId} not found.");
-        }
-
-        existingPaper.Properties.Clear();
         await context.SaveChangesAsync();
     }
 
@@ -96,5 +77,17 @@ public class PaperRepository(DunderMifflinContext context) : IPaperRepository
     public async Task<bool> PaperExists(int id)
     {
         return await context.Papers.AnyAsync(e => e.Id == id);
+    }
+
+    private async Task ClearPaperProperties(int paperId)
+    {
+        var existingPaper = await context.Papers
+            .Include(p => p.Properties)
+            .SingleOrDefaultAsync(p => p.Id == paperId);
+
+        if (existingPaper == null) throw new KeyNotFoundException($"Paper with ID {paperId} not found.");
+
+        existingPaper.Properties.Clear();
+        await context.SaveChangesAsync();
     }
 }

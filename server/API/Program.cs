@@ -35,8 +35,8 @@ public class Program
         // }
         // else
         // {
-            builder.Services.AddDbContext<DunderMifflinContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
+        builder.Services.AddDbContext<DunderMifflinContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DunderMifflinDatabase")));
         //}
 
         // Register the repositories
@@ -50,7 +50,7 @@ public class Program
         builder.Services.AddScoped<IOrderService, OrderService>();
         builder.Services.AddScoped<IPaperService, PaperService>();
         builder.Services.AddScoped<IPropertyService, PropertyService>();
-        
+
         // Register FluentValidation validators
         builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerDto>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateCustomerDto>();
@@ -72,7 +72,7 @@ public class Program
                     .AllowAnyHeader();
             });
         });
-        
+
         // Add AutoMapper
         builder.Services.AddAutoMapper(typeof(MappingProfile));
 

@@ -6,14 +6,13 @@ namespace DataAccess.Repositories;
 
 public class CustomerRepository(DunderMifflinContext context) : ICustomerRepository
 {
-    
     public async Task<Customer> AddCustomer(Customer customer)
     {
         context.Customers.Add(customer);
         await context.SaveChangesAsync();
         return customer;
     }
-    
+
     public async Task AddOrderToCustomer(int customerId, Order order)
     {
         var customer = await context.Customers.FindAsync(customerId);
@@ -23,7 +22,7 @@ public class CustomerRepository(DunderMifflinContext context) : ICustomerReposit
             await context.SaveChangesAsync();
         }
     }
-    
+
     public async Task<IEnumerable<Customer>> GetAllCustomers()
     {
         return await context.Customers.ToListAsync();
@@ -33,7 +32,7 @@ public class CustomerRepository(DunderMifflinContext context) : ICustomerReposit
     {
         return await context.Customers.FindAsync(id);
     }
-    
+
     public async Task<IEnumerable<Customer>> GetCustomersWithOrders()
     {
         return await context.Customers
@@ -41,15 +40,15 @@ public class CustomerRepository(DunderMifflinContext context) : ICustomerReposit
             .Where(c => c.Orders.Count > 0)
             .ToListAsync();
     }
-    
+
 
     public async Task UpdateCustomer(Customer customer)
     {
         context.Entry(customer).State = EntityState.Modified;
         await context.SaveChangesAsync();
     }
-    
-    
+
+
     public async Task DeleteCustomer(int id)
     {
         var customer = await context.Customers.FindAsync(id);
@@ -59,5 +58,4 @@ public class CustomerRepository(DunderMifflinContext context) : ICustomerReposit
             await context.SaveChangesAsync();
         }
     }
-    
 }

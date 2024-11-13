@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DataAccess.Models;
 
-namespace DataAccess.Models;
-
-public partial class OrderEntry
+public class OrderEntry
 {
     public int Id { get; set; }
 

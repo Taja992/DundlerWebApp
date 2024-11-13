@@ -14,9 +14,8 @@ public class PaperValidator : AbstractValidator<CreatePaperDto>
             .GreaterThanOrEqualTo(0).WithMessage("Stock must be 0 or above.");
         RuleFor(x => x.Price).NotEmpty().WithMessage("Price cannot be left empty")
             .GreaterThanOrEqualTo(0).WithMessage("Price must be 0 or above");
-
     }
- }
+}
 
 public class UpdatePaperValidator : AbstractValidator<UpdatePaperDto>
 {

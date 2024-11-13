@@ -2,21 +2,21 @@
 
 namespace Service.TransferModels.Requests.Update;
 
-    public class UpdateOrderEntryDto
-    {
-        public int Id { get; set; }
-        public int Quantity { get; set; }
-        public int? ProductId { get; set; }
-        public int? OrderId { get; set; }
+public class UpdateOrderEntryDto
+{
+    public int Id { get; set; }
+    public int Quantity { get; set; }
+    public int? ProductId { get; set; }
+    public int? OrderId { get; set; }
 
-        public OrderEntry ToOrderEntry()
+    public OrderEntry ToOrderEntry()
+    {
+        return new OrderEntry
         {
-            return new OrderEntry
-            {
-                Id = Id,
-                Quantity = Quantity,
-                ProductId = ProductId,
-                OrderId = OrderId
-            };
-        }
+            Id = Id,
+            Quantity = Quantity,
+            ProductId = ProductId,
+            OrderId = OrderId
+        };
     }
+}

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using DataAccess;
 using DataAccess.Interfaces;
-using DataAccess.Models;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,9 +7,7 @@ using Service.TransferModels.DTOs;
 using Service.TransferModels.Requests.Create;
 using Service.TransferModels.Requests.Update;
 
-
 namespace Service;
-
 
 public interface IPaperService
 {
@@ -23,11 +19,12 @@ public interface IPaperService
     Task<IEnumerable<PaperDto>> GetPaperByProperty(int propertyId);
 }
 
-
-public class PaperService(ILogger<CustomerService> logger, 
+public class PaperService(
+    ILogger<CustomerService> logger,
     IPaperRepository paperRepository,
     IPropertyRepository propertyRepository,
-    IMapper mapper, IValidator<CreatePaperDto> createValidator,
+    IMapper mapper,
+    IValidator<CreatePaperDto> createValidator,
     IValidator<UpdatePaperDto> updateValidator) : IPaperService
 {
     // As a customer I want to have a product overview with filtering, ordering and full-text search preferences.
@@ -39,10 +36,10 @@ public class PaperService(ILogger<CustomerService> logger,
     {
         await createValidator.ValidateAndThrowAsync(createPaperDto);
         var paper = createPaperDto.ToPaper();
-        Paper newPaper = await paperRepository.AddPaper(paper);
+        var newPaper = await paperRepository.AddPaper(paper);
         return new PaperDto().FromEntity(newPaper, mapper);
     }
-    
+
     public async Task<IEnumerable<PaperDto>> GetAllPaper()
     {
         var paper = await paperRepository.GetAllPaper();
@@ -52,24 +49,20 @@ public class PaperService(ILogger<CustomerService> logger,
     public async Task<PaperDto?> GetPaperById(int id)
     {
         var paper = await paperRepository.GetPaperById(id);
-        if (paper != null)
-        {
-            return new PaperDto().FromEntity(paper, mapper);
-        }
+        if (paper != null) return new PaperDto().FromEntity(paper, mapper);
         {
             var message = $"Paper with ID:{id} Not Found";
             logger.LogError("Error in GetPaperById: {Message}", message);
             throw new KeyNotFoundException(message);
         }
     }
-    
+
     public async Task<IEnumerable<PaperDto>> GetPaperByProperty(int propertyId)
     {
         var paper = await paperRepository.GetPaperByProperty(propertyId);
         return paper.Select(p => new PaperDto().FromEntity(p, mapper));
-
     }
-    
+
 
     public async Task UpdatePaper(UpdatePaperDto updatePaperDto)
     {
@@ -88,12 +81,13 @@ public class PaperService(ILogger<CustomerService> logger,
                 logger.LogError("Concurrency error in UpdatePaper for paper ID {PaperId}", paper.Id);
                 throw;
             }
+
             var message = $"Paper with ID {paper.Id} not found.";
             logger.LogError("Error in UpdatePaper: {Message}", message);
             throw new KeyNotFoundException(message);
         }
     }
-    
+
 
     public async Task DeletePaper(int id)
     {
@@ -107,5 +101,4 @@ public class PaperService(ILogger<CustomerService> logger,
 
         await paperRepository.DeletePaper(id);
     }
-    
 }

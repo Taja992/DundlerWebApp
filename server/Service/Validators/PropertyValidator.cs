@@ -9,5 +9,4 @@ public class PropertyValidator : AbstractValidator<CreatePropertyDto>
     {
         RuleFor(x => x.PropertyName).NotEmpty().WithMessage("Property requires a description");
     }
-    
 }

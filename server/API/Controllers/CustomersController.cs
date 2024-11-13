@@ -5,15 +5,12 @@ using Service.TransferModels.DTOs;
 using Service.TransferModels.Requests.Create;
 using Service.TransferModels.Requests.Update;
 
-
 namespace API.Controllers;
-
 
 [ApiController]
 [Route("[controller]")]
 public class CustomersController(ICustomerService service) : ControllerBase
 {
-    
     //Create
     [HttpPost]
     public async Task<ActionResult<CustomerDto>> CreateCustomers([FromBody] CreateCustomerDto createCustomerDto)
@@ -21,7 +18,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
         var createdCustomer = await service.AddCustomer(createCustomerDto);
         return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
     }
-    
+
     // Add Order to Customer
     [HttpPost("{customerId:int}/orders")]
     public async Task<IActionResult> AddOrderToCustomer(int customerId, [FromBody] OrderDto orderDto)
@@ -36,7 +33,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
             return NotFound();
         }
     }
-    
+
     // Get all Customers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
@@ -44,20 +41,17 @@ public class CustomersController(ICustomerService service) : ControllerBase
         var customer = await service.GetCustomers();
         return Ok(customer);
     }
-    
+
     // Get Single Customer with id
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
     {
         var customer = await service.GetCustomerById(id);
-        if (customer == null)
-        {
-            return NotFound();
-        }
-        
+        if (customer == null) return NotFound();
+
         return Ok(customer);
     }
-    
+
     //Get customers including orders
     [HttpGet("customer-orders")]
     public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomersWithOrders()
@@ -65,15 +59,12 @@ public class CustomersController(ICustomerService service) : ControllerBase
         var customers = await service.GetCustomersWithOrders();
         return Ok(customers);
     }
-    
+
     //Update
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateCustomer(int id, [FromBody] UpdateCustomerDto updateCustomerDto)
     {
-        if (id != updateCustomerDto.Id)
-        {
-            return BadRequest();
-        }
+        if (id != updateCustomerDto.Id) return BadRequest();
 
         try
         {
@@ -90,7 +81,7 @@ public class CustomersController(ICustomerService service) : ControllerBase
 
         return NoContent();
     }
-    
+
     //Delete
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCustomer(int id)
@@ -105,5 +96,4 @@ public class CustomersController(ICustomerService service) : ControllerBase
             return NotFound();
         }
     }
-
 }

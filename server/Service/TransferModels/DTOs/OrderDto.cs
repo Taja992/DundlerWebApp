@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Models;
 
-
 namespace Service.TransferModels.DTOs;
 
 public class OrderDto
@@ -14,14 +13,14 @@ public class OrderDto
     public int? CustomerId { get; set; }
     public CustomerDto? Customer { get; set; }
     public List<OrderEntryDto> OrderEntries { get; set; } = new();
-    
-    
+
+
     public OrderDto FromEntity(Order order, IMapper mapper)
     {
         return mapper.Map<OrderDto>(order);
     }
-    
-    
+
+
     public Order ToOrder(IMapper mapper)
     {
         return mapper.Map<Order>(this);
@@ -57,4 +56,3 @@ public class OrderDto
     //     };
     // }
 }
-

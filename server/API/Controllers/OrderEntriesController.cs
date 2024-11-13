@@ -1,11 +1,9 @@
 ﻿using DataAccess;
+using DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DataAccess.Models;
-
 
 namespace API.Controllers;
-
 
 [ApiController]
 [Route("[controller]")]
@@ -28,14 +26,11 @@ public class OrderEntriesController(DunderMifflinContext context) : ControllerBa
             .Include(oe => oe.Order)
             .Include(oe => oe.Product)
             .FirstOrDefaultAsync(oe => oe.Id == id);
-        if (orderEntry == null)
-        {
-            return NotFound();
-        }
+        if (orderEntry == null) return NotFound();
 
         return orderEntry;
     }
-    
+
     // Retrieves all order entries
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderEntry>>> GetOrderEntries()
@@ -46,7 +41,7 @@ public class OrderEntriesController(DunderMifflinContext context) : ControllerBa
             .ToListAsync();
         return Ok(orderEntries);
     }
-    
+
     // Retrieves order entries by order ID
     [HttpGet("order/{orderId:int}")]
     public async Task<ActionResult<IEnumerable<OrderEntry>>> GetOrderEntriesByOrderId(int orderId)
@@ -58,7 +53,7 @@ public class OrderEntriesController(DunderMifflinContext context) : ControllerBa
             .ToListAsync();
         return Ok(orderEntries);
     }
-    
+
     // Retrieves order entries by product ID
     [HttpGet("product/{productId:int}")]
     public async Task<ActionResult<IEnumerable<OrderEntry>>> GetOrderEntriesByProductId(int productId)
@@ -70,15 +65,12 @@ public class OrderEntriesController(DunderMifflinContext context) : ControllerBa
             .ToListAsync();
         return Ok(orderEntries);
     }
-    
+
     // Updates an existing order entry
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateOrderEntry(int id, [FromBody] OrderEntry orderEntry)
     {
-        if (id != orderEntry.Id)
-        {
-            return BadRequest();
-        }
+        if (id != orderEntry.Id) return BadRequest();
 
         context.Entry(orderEntry).State = EntityState.Modified;
 
@@ -88,14 +80,12 @@ public class OrderEntriesController(DunderMifflinContext context) : ControllerBa
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!OrderEntryExists(id))
-            {
-                return NotFound();
-            }
+            if (!OrderEntryExists(id)) return NotFound();
             {
                 throw;
             }
         }
+
         return NoContent();
     }
 
@@ -103,17 +93,13 @@ public class OrderEntriesController(DunderMifflinContext context) : ControllerBa
     {
         return context.OrderEntries.Any(oe => oe.Id == id);
     }
-    
+
     // Deletes an order entry by ID
     [HttpDelete("{id:int}")]
-
     public async Task<IActionResult> DeleteOrderEntry(int id)
     {
         var orderEntry = await context.OrderEntries.FindAsync(id);
-        if (orderEntry == null)
-        {
-            return NotFound();
-        }
+        if (orderEntry == null) return NotFound();
 
         context.OrderEntries.Remove(orderEntry);
         await context.SaveChangesAsync();

@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using DataAccess.Interfaces;
+﻿using DataAccess.Interfaces;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +12,9 @@ public class OrderRepository(DunderMifflinContext context) : IOrderRepository
         await context.SaveChangesAsync();
         return order;
     }
-    
+
     public async Task AddOrderWithEntries(Order order)
     {
-        
         context.Orders.Add(order);
         await context.SaveChangesAsync();
     }
@@ -61,7 +59,4 @@ public class OrderRepository(DunderMifflinContext context) : IOrderRepository
             await context.SaveChangesAsync();
         }
     }
-    
-
-    
 }

@@ -33,7 +33,8 @@ public class OrderValidator : AbstractValidator<CreateOrderDto>
 
 public class UpdateOrderValidator : AbstractValidator<UpdateOrderDto>
 {
-    private static readonly string[] ValidStatuses = { "Pending", "Processing", "Confirmed", "Shipped", "On Hold", "Completed", "Failed" };
+    private static readonly string[] ValidStatuses =
+        { "Pending", "Processing", "Confirmed", "Shipped", "On Hold", "Completed", "Failed" };
 
     public UpdateOrderValidator()
     {
@@ -43,7 +44,7 @@ public class UpdateOrderValidator : AbstractValidator<UpdateOrderDto>
         RuleFor(x => x.TotalAmount).GreaterThanOrEqualTo(0).WithMessage("Total amount must be non-negative");
         RuleFor(x => x.Status).Must(BeAValidStatus).WithMessage("Invalid status");
     }
-    
+
     private static bool BeAfterOrderDate(DateTime orderDate, DateOnly? deliveryDate)
     {
         if (deliveryDate == null)

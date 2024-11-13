@@ -22,7 +22,7 @@ public class PropertyRepository(DunderMifflinContext context) : IPropertyReposit
     {
         return await context.Properties.FindAsync(id);
     }
-    
+
     public async Task<IEnumerable<Property>> GetPropertiesByIds(IEnumerable<int> ids)
     {
         return await context.Properties.Where(p => ids.Contains(p.Id)).ToListAsync();

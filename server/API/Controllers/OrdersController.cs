@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DataAccess.Models;
 using Service;
 using Service.TransferModels.DTOs;
 using Service.TransferModels.Requests.Create;
 using Service.TransferModels.Requests.Update;
 
-
 namespace API.Controllers;
-
-
 
 [ApiController]
 [Route("[controller]")]
@@ -35,15 +31,12 @@ public class OrdersController(IOrderService service) : ControllerBase
     public async Task<ActionResult<OrderDto>> GetOrder(int id)
     {
         var order = await service.GetOrder(id);
-        
-        if (order == null)
-        {
-            return NotFound();
-        }
+
+        if (order == null) return NotFound();
 
         return order;
     }
-    
+
     // Get Orders Via Customer Id
     [HttpGet("Customer/{customerId:int}")]
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByCustomerId(int customerId)
@@ -51,15 +44,12 @@ public class OrdersController(IOrderService service) : ControllerBase
         var customer = await service.GetOrdersByCustomerId(customerId);
         return Ok(customer);
     }
-    
+
     // Update Order Info
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderDto updateOrderDto)
     {
-        if (id != updateOrderDto.Id)
-        {
-            return BadRequest();
-        }
+        if (id != updateOrderDto.Id) return BadRequest();
 
         try
         {
@@ -69,6 +59,7 @@ public class OrdersController(IOrderService service) : ControllerBase
         {
             return NotFound();
         }
+
         return NoContent();
     }
 
@@ -88,10 +79,10 @@ public class OrdersController(IOrderService service) : ControllerBase
     }
 
     [HttpPost("CreateWithEntries")]
-    public async Task<ActionResult<OrderDto>> CreateOrderWithEntries( [FromBody] CreateOrderWithEntriesDto createOrderWithEntriesDto )
+    public async Task<ActionResult<OrderDto>> CreateOrderWithEntries(
+        [FromBody] CreateOrderWithEntriesDto createOrderWithEntriesDto)
     {
         var createdOrder = await service.CreateOrderWithEntries(createOrderWithEntriesDto);
         return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
     }
-    
 }

@@ -202,5 +202,7 @@ Content-Type: application/json
   "discontinued": false,
   "stock": 100,
   "price": 9.99,
-  "propertyIds": [3]
+  "propertyIds": [
+    3
+  ]
 }

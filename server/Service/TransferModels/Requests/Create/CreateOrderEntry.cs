@@ -1,22 +1,20 @@
 ﻿using DataAccess.Models;
-using System;
 
-namespace Service.TransferModels.Requests.Create
+namespace Service.TransferModels.Requests.Create;
+
+public class CreateOrderEntryDto
 {
-    public class CreateOrderEntryDto
-    {
-        public int Quantity { get; set; }
-        public int? ProductId { get; set; }
-        public int? OrderId { get; set; }
+    public int Quantity { get; set; }
+    public int? ProductId { get; set; }
+    public int? OrderId { get; set; }
 
-        public OrderEntry ToOrderEntry()
+    public OrderEntry ToOrderEntry()
+    {
+        return new OrderEntry
         {
-            return new OrderEntry
-            {
-                Quantity = Quantity,
-                ProductId = ProductId,
-                OrderId = OrderId
-            };
-        }
+            Quantity = Quantity,
+            ProductId = ProductId,
+            OrderId = OrderId
+        };
     }
 }

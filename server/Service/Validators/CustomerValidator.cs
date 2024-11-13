@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.Net.Mail;
 using FluentValidation;
 using Service.TransferModels.Requests.Create;
 using Service.TransferModels.Requests.Update;
@@ -14,21 +14,21 @@ public class CustomerValidator : AbstractValidator<CreateCustomerDto>
         RuleFor(x => x.Phone).Must(BeAValidPhone).WithMessage("Invalid phone format");
     }
 
-        private static bool BeAValidEmail(string? email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return false;
+    private static bool BeAValidEmail(string? email)
+    {
+        if (string.IsNullOrEmpty(email))
+            return false;
 
-            try
-            {
-                var address = new System.Net.Mail.MailAddress(email);
-                return address.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
+        try
+        {
+            var address = new MailAddress(email);
+            return address.Address == email;
         }
+        catch
+        {
+            return false;
+        }
+    }
 
     private static bool BeAValidPhone(string? phone)
     {
@@ -52,7 +52,7 @@ public class UpdateCustomerValidator : AbstractValidator<UpdateCustomerDto>
 
         try
         {
-            var address = new System.Net.Mail.MailAddress(email);
+            var address = new MailAddress(email);
             return address.Address == email;
         }
         catch

@@ -2,15 +2,15 @@
 
 namespace Service.TransferModels.Requests.Create;
 
-    public class CreatePropertyDto
-    {
-        public string PropertyName { get; set; } = null!;
+public class CreatePropertyDto
+{
+    public string PropertyName { get; set; } = null!;
 
-        public Property ToProperty()
+    public Property ToProperty()
+    {
+        return new Property
         {
-            return new Property
-            {
-                PropertyName = PropertyName
-            };
-        }
+            PropertyName = PropertyName
+        };
     }
+}

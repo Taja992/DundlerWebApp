@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DataAccess.Models;
 
-namespace DataAccess.Models;
-
-public partial class Customer
+public class Customer
 {
     public int Id { get; set; }
 
@@ -11,6 +8,7 @@ public partial class Customer
 
     public string? Address { get; set; }
 
+    
     public string? Phone { get; set; }
 
     public string? Email { get; set; }

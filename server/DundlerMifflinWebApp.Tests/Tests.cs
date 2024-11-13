@@ -1,10 +1,10 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using API;
-using DataAccess.Models;
 using Moq;
-using Xunit;
 using Service.TransferModels.DTOs;
 using Service.TransferModels.Requests.Create;
+using Xunit;
 
 namespace DundlerMifflinWebApp.Tests;
 
@@ -22,7 +22,7 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         // Arrange
         var client = _factory.CreateClient();
-        var createCustomerDto = new CreateCustomerDto()
+        var createCustomerDto = new CreateCustomerDto
         {
             Name = "Lets Test",
             Address = "123 Test St",
@@ -30,7 +30,7 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
             Email = "test@letstest.com"
         };
 
-        var customerDto = new CustomerDto()
+        var customerDto = new CustomerDto
         {
             Id = 1,
             Name = "Lets Test",
@@ -47,7 +47,7 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
 
         // Assert
         response.EnsureSuccessStatusCode();
-        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var createdCustomer = await response.Content.ReadFromJsonAsync<CustomerDto>();
         Assert.NotNull(createdCustomer);
@@ -56,11 +56,10 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
         Assert.Equal("123 Test St", createdCustomer.Address);
         Assert.Equal("+1234567890", createdCustomer.Phone);
     }
-        
+
     [Fact]
     public async Task TryToAddOrderWithOrderEntry()
     {
-            
         // Arrange
         var client = _factory.CreateClient();
         var createOrderWithEntriesDto = new CreateOrderWithEntriesDto
@@ -72,8 +71,8 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
             CustomerId = 1,
             OrderEntries = new List<CreateOrderEntryDto>
             {
-                new CreateOrderEntryDto() { Quantity = 5, ProductId = 5},
-                new CreateOrderEntryDto() { Quantity = 9, ProductId = 24}
+                new() { Quantity = 5, ProductId = 5 },
+                new() { Quantity = 9, ProductId = 24 }
             }
         };
 
@@ -87,20 +86,21 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
             CustomerId = 1,
             OrderEntries = new List<OrderEntryDto>
             {
-                new OrderEntryDto { Quantity = 5, ProductId = 5 },
-                new OrderEntryDto { Quantity = 9, ProductId = 24 }
+                new() { Quantity = 5, ProductId = 5 },
+                new() { Quantity = 9, ProductId = 24 }
             }
         };
-            
-        _factory.MockOrderService.Setup(service => service.CreateOrderWithEntries(It.IsAny<CreateOrderWithEntriesDto>()))
+
+        _factory.MockOrderService
+            .Setup(service => service.CreateOrderWithEntries(It.IsAny<CreateOrderWithEntriesDto>()))
             .ReturnsAsync(orderDto);
-            
+
         // Act
         var response = await client.PostAsJsonAsync("Orders/CreateWithEntries", createOrderWithEntriesDto);
-            
+
         // Assert
         response.EnsureSuccessStatusCode();
-        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var createdOrder = await response.Content.ReadFromJsonAsync<OrderDto>();
         Assert.NotNull(createdOrder);
@@ -109,14 +109,12 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
         Assert.Equal(1, createdOrder.CustomerId);
         // Make sure 2 order entries have been put in
         Assert.Equal(2, createdOrder.OrderEntries.Count);
-
     }
 
 
     [Fact]
     public async Task TryToCreateNewPaper()
     {
-            
         // Arrange
         var client = _factory.CreateClient();
         var createPaperDto = new CreatePaperDto
@@ -127,7 +125,7 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
             Price = 52
         };
 
-        var paperDto = new PaperDto()
+        var paperDto = new PaperDto
         {
             Id = 1,
             Name = "IAmAPaper",
@@ -138,15 +136,15 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
 
         _factory.MockPaperService.Setup(service => service.AddPaper(It.IsAny<CreatePaperDto>()))
             .ReturnsAsync(paperDto);
-            
+
         // Act
 
         var response = await client.PostAsJsonAsync("/Paper", createPaperDto);
-            
+
         // Assert
 
         response.EnsureSuccessStatusCode();
-        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var createdPaper = await response.Content.ReadFromJsonAsync<PaperDto>();
         Assert.NotNull(createdPaper);
@@ -154,9 +152,8 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
         Assert.False(createdPaper.Discontinued);
         Assert.Equal(53, createdPaper.Stock);
         Assert.Equal(52, createdPaper.Price);
-
     }
-        
+
     [Fact]
     public async Task GetOrdersByCustomerId_ReturnsOrders()
     {
@@ -166,7 +163,7 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
 
         var orders = new List<OrderDto>
         {
-            new OrderDto
+            new()
             {
                 Id = 1,
                 OrderDate = new DateTime(2023, 10, 1, 12, 0, 0),
@@ -176,11 +173,11 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
                 CustomerId = customerId,
                 OrderEntries = new List<OrderEntryDto>
                 {
-                    new OrderEntryDto { Quantity = 5, ProductId = 5 },
-                    new OrderEntryDto { Quantity = 9, ProductId = 24 }
+                    new() { Quantity = 5, ProductId = 5 },
+                    new() { Quantity = 9, ProductId = 24 }
                 }
             },
-            new OrderDto
+            new()
             {
                 Id = 2,
                 OrderDate = new DateTime(2023, 10, 2, 12, 0, 0),
@@ -190,8 +187,8 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
                 CustomerId = customerId,
                 OrderEntries = new List<OrderEntryDto>
                 {
-                    new OrderEntryDto { Quantity = 3, ProductId = 7 },
-                    new OrderEntryDto { Quantity = 4, ProductId = 12 }
+                    new() { Quantity = 3, ProductId = 7 },
+                    new() { Quantity = 4, ProductId = 12 }
                 }
             }
         };
@@ -204,7 +201,7 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
 
         // Assert
         response.EnsureSuccessStatusCode();
-        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var returnedOrders = await response.Content.ReadFromJsonAsync<List<OrderDto>>();
         Assert.NotNull(returnedOrders);
@@ -212,6 +209,4 @@ public class Tests : IClassFixture<CustomWebApplicationFactory<Program>>
         Assert.Equal(customerId, returnedOrders[0].CustomerId);
         Assert.Equal(customerId, returnedOrders[1].CustomerId);
     }
-        
-        
 }

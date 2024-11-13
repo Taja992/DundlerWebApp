@@ -2,17 +2,17 @@
 
 namespace Service.TransferModels.Requests.Update;
 
-    public class UpdatePropertyDto
-    {
-        public int Id { get; set; }
-        public string PropertyName { get; set; } = null!;
+public class UpdatePropertyDto
+{
+    public int Id { get; set; }
+    public string PropertyName { get; set; } = null!;
 
-        public Property ToProperty()
+    public Property ToProperty()
+    {
+        return new Property
         {
-            return new Property
-            {
-                Id = Id,
-                PropertyName = PropertyName
-            };
-        }
+            Id = Id,
+            PropertyName = PropertyName
+        };
     }
+}
